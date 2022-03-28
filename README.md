@@ -1,7 +1,7 @@
 # Bachelor's Thesis
 
 ## Basic Information:
-* Topic: B-Scheduling on Ubuntu Linux
+* Topic: **B-Scheduling on Ubuntu Linux**
 * Supervisor: Prof. Andreas Birk (`a.birk@jacobs-university.de`)
 * Jacobs University Bremen (2022)
 
