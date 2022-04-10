@@ -1,20 +1,16 @@
 #include <stdio.h>
 
-// EXAMPLE LECTURE
-//#define MAXPV 4
-//#define MAXProcPerPC 5
-//
-// EXAMPLE HW
-#define MAXPV 3
-#define MAXProcPerPC 3     
+
+#define MAXPV 4
+#define MAXProcPerPC 5
+// #define MAXPV 2
+// #define MAXProcPerPC 3     
 int wait[MAXPV][MAXProcPerPC];
+int ReverseBinary(int k, int d);
 
-
-// EXAMPLE LECTURE
-// int ProcPerPC[]={2,5,1,1,1};
-//
-// EXAMPLE HW
-int ProcPerPC[]={1,3,2,1};
+int ProcPerPC[]={2,5,1,1,1};
+// int ProcPerPC[]={1,3,2,1};
+// int ProcPerPC[]={1,1,0};
 
 
 void ExecuteBSchedule() {
@@ -91,6 +87,27 @@ int ReverseBinary(int k, int d){
 	return(tmp);
 }
 
+// int ReverseBinary(int k, int d){
+// 	int tmp = 0;
+// 	int i;
+
+// 	if(d<1) return(0);
+
+// 	printf("k = %d\td= %d\n",k,d);
+
+// 	for(i=0;i<d;i++){
+// 		printf("i = %d\t",i);
+// 		tmp = tmp<<1;
+// 		printf("tmp = %d\t",tmp);
+// 		tmp += k & 1;
+// 		printf("tmp = %d\t",tmp);
+// 		k = k>>1;
+// 		printf("k = %d\n",k);
+// 	}
+// 	return(tmp);
+// }
+
+
 
 void DemoReverseBinary(int d){
 	int i,j,h;
@@ -107,12 +124,14 @@ void DemoReverseBinary(int d){
 
 int main (int argc, char *argv[])
 {
-//	DemoReverseBinary(4);
+	// DemoReverseBinary(4);
 
 	ComputeWait();
-	ShowWait();
+	// ShowWait();
 
 	ExecuteBSchedule();
+
+	// printf("\n Result = %d\n",ReverseBinary(13,4));
 
 	return (0);
 }
