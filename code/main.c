@@ -6,8 +6,13 @@
 #include <unistd.h>
 #include <sys/types.h> /* for pid_t */
 #include <sys/wait.h> /* for wait */
+#include <signal.h>
+#include <string.h>
+
+volatile sig_atomic_t exitRequested = 0;
 
 void execute_bschedule();
+void  INThandler(int sig);
 
 int main(){
     float frequency;
@@ -19,6 +24,8 @@ int main(){
 
     struct timespec tim;
     tim.tv_sec=0;
+
+    signal(SIGINT,INThandler);
 
     printf("Enter your choice for input:\n1-Input in Seconds\n2-Input in Hz\n\n");
     scanf("%d", &choice);
@@ -60,7 +67,7 @@ int main(){
     pid_t pid=fork();
 
     if (pid==0){
-        while(i<2)
+        while(!exitRequested)
         {
             if(nsecs)
             {
@@ -89,6 +96,7 @@ int main(){
     }
     else{
         waitpid(pid,0,0);/*wait for child to exit*/
+        printf("\nExiting...\n");
     }
     return 0;
 }
@@ -97,6 +105,10 @@ void execute_bschedule()
 {
     //calls the bscheduling file from here maybe
     system("./scheduling.out");
-    // _execl();
     return;
+}
+
+void  INThandler(int sig)
+{
+    exitRequested=1;
 }
