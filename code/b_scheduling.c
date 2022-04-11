@@ -65,11 +65,7 @@ void ShowWait() {
 	}	
 }
 
-
-//
-// computes Reverse Binary  
-// of number k with d digits
-//
+/*computes Reverse Binary of number k with d digits*/
 int ReverseBinary(int k, int d){
 	int tmp = 0;
 	int i;
@@ -83,28 +79,6 @@ int ReverseBinary(int k, int d){
 	}
 	return(tmp);
 }
-
-// int ReverseBinary(int k, int d){
-// 	int tmp = 0;
-// 	int i;
-
-// 	if(d<1) return(0);
-
-// 	printf("k = %d\td= %d\n",k,d);
-
-// 	for(i=0;i<d;i++){
-// 		printf("i = %d\t",i);
-// 		tmp = tmp<<1;
-// 		printf("tmp = %d\t",tmp);
-// 		tmp += k & 1;
-// 		printf("tmp = %d\t",tmp);
-// 		k = k>>1;
-// 		printf("k = %d\n",k);
-// 	}
-// 	return(tmp);
-// }
-
-
 
 void DemoReverseBinary(int d){
 	int i,j,h;
@@ -121,15 +95,8 @@ void DemoReverseBinary(int d){
 
 int main (int argc, char *argv[])
 {
-	// DemoReverseBinary(4);
-
 	ComputeWait();
-	// ShowWait();
-
 	ExecuteBSchedule();
-
-	// printf("\n Result = %d\n",ReverseBinary(13,4));
-
 	return (0);
 }
 
