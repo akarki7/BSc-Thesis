@@ -85,7 +85,7 @@ int main(){
 void execute_bschedule()
 {
     //calls the bscheduling file from here maybe
-    system("./out");
+    system("./scheduling.out");
     // _execl();
     printf("Finished\n ");
 }

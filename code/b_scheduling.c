@@ -56,9 +56,6 @@ void ComputeWait() {
 }
 
 void ShowWait() {
-	int start = 0; 
-	int slots = 1;
-
 	int i,j;
 
 	for(i=0;  i<=MAXPV; i++) {

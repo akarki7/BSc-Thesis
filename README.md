@@ -7,9 +7,19 @@
 
 ## Steps to setup & run the B-Scheduling algorithm
 ---------------------------------------------
-* Step 1
-* Step 2
-* Step 3
+* Make sure you have Ubuntu Linux OS. 
+* Make sure you have `make` installed on your device.
+* Run `make` inside the code directory to execute the makefile and get two executables.
+* Run `./main.out` 
+* To cleanup run `make deleteall`
+
+## Linux used:
+* DISTRIB_ID=Ubuntu
+* DISTRIB_RELEASE=20.04
+* DISTRIB_CODENAME=focal
+* DISTRIB_DESCRIPTION="Ubuntu 20.04.4 LTS"
+* NAME="Ubuntu"
+* VERSION="20.04.4 LTS (Focal Fossa)"
 
 ## Folder and File Descriptions: (only the important files are listed)
 
