@@ -12,6 +12,17 @@ int ProcPerPC[]={2,5,1,1,1};
 // int ProcPerPC[]={1,3,2,1};
 // int ProcPerPC[]={1,1,0};
 
+void ExecuteBSchedule();
+void ComputeWait();
+int ReverseBinary(int k, int d);
+
+
+int main (int argc, char *argv[])
+{
+	ComputeWait();
+	ExecuteBSchedule();
+	return (0);
+}
 
 void ExecuteBSchedule() {
 	int nmic, round; 
@@ -55,16 +66,6 @@ void ComputeWait() {
 	
 }
 
-void ShowWait() {
-	int i,j;
-
-	for(i=0;  i<=MAXPV; i++) {
-		for(j=0; j< ProcPerPC[i]; j++){
-			printf ("wait p%d.%d = %d  \n", i, j,wait[i][j]);		
-		}
-	}	
-}
-
 /*computes Reverse Binary of number k with d digits*/
 int ReverseBinary(int k, int d){
 	int tmp = 0;
@@ -80,23 +81,5 @@ int ReverseBinary(int k, int d){
 	return(tmp);
 }
 
-void DemoReverseBinary(int d){
-	int i,j,h;
 
-	for(i=1;i<=d;i++){
-		for(j=0;j<(1<<i);j++){
-			h = ReverseBinary(j,i);
-			printf ("Rev.Bin.(%d,%d) = %d  \n", j, i,h);
-		}
-		printf ("\n");
-	}
-}
-
-
-int main (int argc, char *argv[])
-{
-	ComputeWait();
-	ExecuteBSchedule();
-	return (0);
-}
 
