@@ -4,6 +4,8 @@
 #include<stdbool.h>
 #include<errno.h>
 #include <unistd.h>
+#include <sys/types.h> /* for pid_t */
+#include <sys/wait.h> /* for wait */
 
 void execute_bschedule();
 
@@ -53,31 +55,40 @@ int main(){
             exit(EXIT_FAILURE);
     }
     i=0;
-    while(i<2)
-    {
-        if(nsecs)
+
+    /*Spawn a child to run the program.*/
+    pid_t pid=fork();
+
+    if (pid==0){
+        while(i<2)
         {
-            execute_bschedule();
-            if(nanosleep(&tim,NULL)==-1)
+            if(nsecs)
             {
-                switch (errno) {
-                        case EINTR:
-                            printf("interrupted by a signal handler\n");
-                            exit(EXIT_FAILURE);
-                        case EINVAL:
-                            printf("tv_nsec - not in range or tv_sec is negative\n");
-                            exit(EXIT_FAILURE);
-                        default:
-                            perror("nanosleep");
-                            exit(EXIT_FAILURE);
-                    }
+                execute_bschedule();
+                if(nanosleep(&tim,NULL)==-1)
+                {
+                    switch (errno) {
+                            case EINTR:
+                                printf("interrupted by a signal handler\n");
+                                exit(EXIT_FAILURE);
+                            case EINVAL:
+                                printf("tv_nsec - not in range or tv_sec is negative\n");
+                                exit(EXIT_FAILURE);
+                            default:
+                                perror("nanosleep");
+                                exit(EXIT_FAILURE);
+                        }
+                }
             }
+            else{
+                execute_bschedule();
+                sleep(input_in_seconds);
+            }
+            i++;
         }
-        else{
-            execute_bschedule();
-            sleep(time_in_seconds);
-        }
-        i++;
+    }
+    else{
+        waitpid(pid,0,0);/*wait for child to exit*/
     }
     return 0;
 }
@@ -87,5 +98,5 @@ void execute_bschedule()
     //calls the bscheduling file from here maybe
     system("./scheduling.out");
     // _execl();
-    printf("Finished\n ");
+    return;
 }
