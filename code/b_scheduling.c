@@ -24,9 +24,9 @@ int main (int argc, char *argv[])
 	return (0);
 }
 
+/*executes the bscheduling algorithm to get the required schedule*/
 void ExecuteBSchedule() {
 	int nmic, round; 
-
 	int i,j;
 
 	// compute the number of minor cycles
@@ -49,6 +49,7 @@ void ExecuteBSchedule() {
 	}
 }
 
+/*computes initial wait values for all the processes*/
 void ComputeWait() {
 	int start = 0; 
 	int slots = 1;
@@ -80,6 +81,3 @@ int ReverseBinary(int k, int d){
 	}
 	return(tmp);
 }
-
-
-
