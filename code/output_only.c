@@ -24,32 +24,30 @@ int main (int argc, char *argv[])
     int MAXPV;
     int MAXProcPerPC;
 
-    char *filename="output.txt";
+    char *filename= malloc(50);
 
-    while((opt=getopt(argc,argv,"fot"))!=-1)
+    while((opt=getopt(argc,argv,"fo:t"))!=-1)
     {
         switch(opt)
         {
             case 'f':
-                printf("Print to file\n");
                 f_flag=1;
                 break;
             case 'o':
-                printf("Output file specific name\n");
                 o_flag=1;
+                strcpy(filename,optarg);
                 break;
             case 't':
-                printf("print in terminal\n");
                 t_flag=1;
                 break;
             default:
-                fprintf(stderr, "usage: [-f] [-o] [-b] [filename]");
+                fprintf(stderr, "usage: [-f] [-o filename] [-t]\n");
                 exit(EXIT_FAILURE);
         }
     }
 
-    if(o_flag){
-        strcpy(filename,argv[optind]);
+    if(!o_flag){
+        strcpy(filename,"output.txt");
     }
 
     printf("Enter value for MAXPV: ");
@@ -70,7 +68,8 @@ int main (int argc, char *argv[])
     for (i=0; i<=MAXPV; i++){
         scanf("%d",&ProcPerPC[i]);
     }
-        
+    
+    printf("filename: %s",filename);
 
 	ComputeWait(wait,ProcPerPC,MAXPV);
 	ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV);
@@ -105,7 +104,7 @@ void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV) {
 		printf ("\n");		
 
 	}
-    printf("\n\n\n----------------------------------\n");
+    printf("\n\n----------------------------------\n");
     printf("Analysis of the schedule:\n\n");
     printf("Workload (WL) = %d\n",count);
     double av = (double)count/(double)nmic;
