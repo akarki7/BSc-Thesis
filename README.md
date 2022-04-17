@@ -10,6 +10,7 @@
 * Make sure you have Ubuntu Linux OS. 
 * Make sure you have `make` installed on your device.
 * Run `make` inside the code directory to execute the makefile and get two executables.
+* Run `make scheduling.out` to just compile the scheduling algorithm and then run `./scheduling.out`
 * Run `./main.out` 
 * To cleanup run `make deleteall`
 
