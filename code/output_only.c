@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include<string.h>
+#include <math.h>
 
 // for normal case
 // #define MAXPV 4
@@ -81,9 +82,12 @@ int main (int argc, char *argv[])
 void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV) {
 	int nmic, round; 
 	int i,j;
+    int count=0;
 
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
+
+    printf("\n\n----------------------------------\n\n");
 
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
@@ -93,6 +97,7 @@ void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV) {
 				if(wait[i][j]==0) {
 					printf ("p%d.%d ", i, j);		
 					wait[i][j] = 1<<i;
+                    count++;
 				}
 				wait[i][j]--;
 			}
@@ -100,6 +105,17 @@ void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV) {
 		printf ("\n");		
 
 	}
+    printf("\n\n\n----------------------------------\n");
+    printf("Analysis of the schedule:\n\n");
+    printf("Workload (WL) = %d\n",count);
+    double av = (double)count/(double)nmic;
+    printf("Average processes per minor cycle (av) = %lf \n",av);
+    int perfect,dirty;
+    perfect=ceil(av);
+    dirty=floor(av);
+
+    printf("Perfect = %d\n",perfect);
+    printf("Dirty = %d\n",dirty);
 }
 
 /*computes initial wait values for all the processes*/
