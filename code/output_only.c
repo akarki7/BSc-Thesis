@@ -62,8 +62,8 @@ int main (int argc, char *argv[])
 
     if(p_flag){
         int MAXPV_array[]={2,4,5,6,9}; //hard coded values for plotting
-        int MAXProcPerPC_array[]={5,5,5,5,5};
-        int ProcPerPC_array[5][10]={{2,1,0,0,0},{2,5,1,1,1},{2,5,1,1,1,3},{2,5,1,1,1,3,4},{2,5,1,1,1,0,0,0,0,1}};
+        int MAXProcPerPC_array[]={5,5,5,5,20};
+        int ProcPerPC_array[6][10]={{2,1,0,0,0},{2,5,1,1,1},{2,5,1,1,1,3},{2,5,1,1,1,3,4},{2,15,11,11,11,10,10,10,10,11}};
         int i;
         
         int k=0;
@@ -134,8 +134,6 @@ void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int 
     int nmic, round; 
 	int i,j;
     int count=0;
-    printf("Called\n");
-
     FILE *filePointer;
     filePointer = fopen(filename, "a") ; 
 
