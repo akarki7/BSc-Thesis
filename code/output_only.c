@@ -61,9 +61,25 @@ int main (int argc, char *argv[])
     }
 
     if(p_flag){
-        int MAXPV_array[]={2,4,5,6,9}; //hard coded values for plotting
-        int MAXProcPerPC_array[]={5,5,5,5,20};
-        int ProcPerPC_array[6][10]={{2,1,0,0,0},{2,5,1,1,1},{2,5,1,1,1,3},{2,5,1,1,1,3,4},{2,15,11,11,11,10,10,10,10,11}};
+        // int MAXPV_array[]={2,4,5,7,8,9}; //hard coded values for plotting
+        // int MAXProcPerPC_array[]={5,10,10,15,15,20};
+        // int ProcPerPC_array[6][10]={{2,1,4},{5,8,8,8,9},{10,7,8,9,9,10},{5,5,10,10,9,3,4,5},{5,15,10,10,9,13,14,15,12},{12,15,11,11,11,10,10,10,10,11}};
+        
+        /*Same PV but different increasing number of processes for PV=4*/
+        int MAXPV_array[]={4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4}; //hard coded values for plotting
+        int MAXProcPerPC_array[]={5,5,5,10,10,10,10,10,10,15,15,20,25,30,35,40};
+        int ProcPerPC_array[16][5]={{1,1,1,1,1},{2,2,2,2,2},{3,3,3,3,3},{4,4,4,4,4},{5,5,5,5,5}, {6,6,6,6,6},{7,7,7,7,7},{8,8,8,8,8},{9,9,9,9,9},
+        {10,10,10,10,10},{15,15,15,15,15},{20,20,20,20,20},{25,25,25,25,25},{30,30,30,30,30},{35,35,35,35,35},{40,40,40,40,40}};
+
+        /*Same PV but different increasing number of processes for PV=10*/
+        // int MAXPV_array[]={10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}; //hard coded values for plotting
+        // int MAXProcPerPC_array[]={5,5,5,10,10,10,10,10,10,15,15,20,25,30,35,40};
+        // int ProcPerPC_array[16][11]={{1,1,1,1,1,1,1,1,1,1,1},{2,2,2,2,2,2,2,2,2,2,2},
+        // {3,3,3,3,3,3,3,3,3,3,3},{4,4,4,4,4,4,4,4,4,4,4},{5,5,5,5,5,5,5,5,5,5,5}, {6,6,6,6,6,6,6,6,6,6,6},
+        // {7,7,7,7,7,7,7,7,7,7,7},{8,8,8,8,8,8,8,8,8,8,8},{9,9,9,9,9,9,9,9,9,9,9},{10,10,10,10,10,10,10,10,10,10,10},
+        // {15,15,15,15,15,15,15,15,15,15,15},{20,20,20,20,20,20,20,20,20,20,20},{25,25,25,25,25,25,25,25,25,25,25},
+        // {30,30,30,30,30,30,30,30,30,30,30},{35,35,35,35,35,35,35,35,35,35,35},{40,40,40,40,40,40,40,40,40,40,40}};
+
         int i;
         
         int k=0;
@@ -134,8 +150,9 @@ void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int 
     int nmic, round; 
 	int i,j;
     int count=0;
-    FILE *filePointer;
+    FILE *filePointer, *filePointer2;
     filePointer = fopen(filename, "a") ; 
+    filePointer2=fopen("plots/data.txt","a");
 
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
@@ -161,6 +178,8 @@ void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int 
     fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
     fprintf(filePointer,"Perfect = %d\n",perfect);
     fprintf(filePointer,"Dirty = %d\n",dirty);
+    fprintf(filePointer2,"%d %d %d %lf\n",dirty,perfect,count,av);
+    fclose(filePointer2);
     fclose(filePointer);
 }
 
