@@ -11,6 +11,7 @@
 
 void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 void ComputeWait(int **wait, int *ProcPerPC,int MAXPV);
+void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 int ReverseBinary(int k, int d);
 
 
@@ -20,13 +21,14 @@ int main (int argc, char *argv[])
     int f_flag=0;
     int t_flag=0;
     int o_flag=0;
+    int a_flag=0;
 
     int MAXPV;
     int MAXProcPerPC;
 
     char *filename= malloc(50);
 
-    while((opt=getopt(argc,argv,"fo:t"))!=-1)
+    while((opt=getopt(argc,argv,"fo:ta"))!=-1)
     {
         switch(opt)
         {
@@ -39,6 +41,9 @@ int main (int argc, char *argv[])
                 break;
             case 't':
                 t_flag=1;
+                break;
+            case 'a':
+                a_flag=1;
                 break;
             default:
                 fprintf(stderr, "usage: [-f] [-o filename] [-t]\n");
@@ -69,12 +74,66 @@ int main (int argc, char *argv[])
         scanf("%d",&ProcPerPC[i]);
     }
     
-    printf("filename: %s",filename);
 
 	ComputeWait(wait,ProcPerPC,MAXPV);
-	ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+
+    if (a_flag){
+        ExecuteBSchedule_analysis_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+    }
+    else{
+        ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+    }
+	
 
 	return EXIT_SUCCESS;
+}
+
+/*executes the bscheduling algorithm to get the required schedule*/
+void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag) {
+	int nmic, round; 
+	int i,j;
+    int count=0;
+
+    FILE *filePointer;
+    filePointer = fopen(filename, "w") ; 
+
+	// compute the number of minor cycles
+	nmic = (1<<MAXPV);
+
+    printf("\n\n----------------------------------\n\n");
+
+	// execute major cycle
+	for(round=0; round < nmic; round++) {
+		// execute minor cycle
+		for(i=0; i<=MAXPV; i++){
+			for(j=0; j<ProcPerPC[i]; j++){
+				if(wait[i][j]==0) {		
+					wait[i][j] = 1<<i;
+                    count++;
+				}
+				wait[i][j]--;
+			}
+		}
+	}
+    printf("Analysis of the schedule:\n\n");
+    printf("Workload (WL) = %d\n",count);
+    double av = (double)count/(double)nmic;
+    printf("Average processes per minor cycle (av) = %lf \n",av);
+    int perfect,dirty;
+    perfect=ceil(av);
+    dirty=floor(av);
+
+    printf("Perfect = %d\n",perfect);
+    printf("Dirty = %d\n",dirty);
+    
+    if (f_flag){
+        fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
+        fprintf(filePointer, "Workload (WL) = %d\n",count);
+        fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
+        fprintf(filePointer,"Perfect = %d\n",perfect);
+        fprintf(filePointer,"Dirty = %d\n",dirty);
+        fclose(filePointer);
+    }
 }
 
 /*executes the bscheduling algorithm to get the required schedule*/
@@ -112,13 +171,8 @@ void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV, int
             fputs("\n", filePointer);
         }
 	}
-    printf("\n\n----------------------------------\n");
     printf("Analysis of the schedule:\n\n");
     printf("Workload (WL) = %d\n",count);
-    if (f_flag){
-        fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
-        fprintf(filePointer,"Workload (WL) = %d\n",count);
-    }
     double av = (double)count/(double)nmic;
     printf("Average processes per minor cycle (av) = %lf \n",av);
     int perfect,dirty;

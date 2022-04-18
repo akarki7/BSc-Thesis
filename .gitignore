@@ -4,3 +4,6 @@
 *.txt
 
 code/demo_b_scheduling.c
+!code/plots/requirements.txt
+
+code/plots/venv
