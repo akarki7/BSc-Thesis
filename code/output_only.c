@@ -12,6 +12,7 @@
 void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 void ComputeWait(int **wait, int *ProcPerPC,int MAXPV);
 void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
+void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 int ReverseBinary(int k, int d);
 
 
@@ -22,13 +23,14 @@ int main (int argc, char *argv[])
     int t_flag=0;
     int o_flag=0;
     int a_flag=0;
+    int p_flag=0;
 
     int MAXPV;
     int MAXProcPerPC;
 
     char *filename= malloc(50);
 
-    while((opt=getopt(argc,argv,"fo:ta"))!=-1)
+    while((opt=getopt(argc,argv,"fo:tap"))!=-1)
     {
         switch(opt)
         {
@@ -45,8 +47,11 @@ int main (int argc, char *argv[])
             case 'a':
                 a_flag=1;
                 break;
+            case 'p':
+                p_flag=1;
+                break;
             default:
-                fprintf(stderr, "usage: [-f] [-o filename] [-t]\n");
+                fprintf(stderr, "usage: [-f] [-o filename] [-t] [-p]\n");
                 exit(EXIT_FAILURE);
         }
     }
@@ -55,37 +60,110 @@ int main (int argc, char *argv[])
         strcpy(filename,"output.txt");
     }
 
-    printf("Enter value for MAXPV: ");
-    scanf("%d", &MAXPV);
+    if(p_flag){
+        int MAXPV_array[]={2,4,5,6,9}; //hard coded values for plotting
+        int MAXProcPerPC_array[]={5,5,5,5,5};
+        int ProcPerPC_array[5][10]={{2,1,0,0,0},{2,5,1,1,1},{2,5,1,1,1,3},{2,5,1,1,1,3,4},{2,5,1,1,1,0,0,0,0,1}};
+        int i;
+        
+        int k=0;
 
-    printf("Enter value for MAXProcPerPC: ");
-    scanf("%d", &MAXProcPerPC);
+        int length = sizeof(MAXPV_array)/sizeof(MAXPV_array[0]);
+        while(k<length){
+            MAXPV=MAXPV_array[k];
+            MAXProcPerPC=MAXProcPerPC_array[k];
+            printf("k = %d %d %d\n",k,MAXPV,MAXProcPerPC);
+            int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
+            for (i = 0; i <= MAXPV; i++){
+                wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
+            }
 
-    int i;
-    int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
-    for (i = 0; i <= MAXPV; i++){
-        wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
-    }
+            int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
 
-    int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
+            ProcPerPC=ProcPerPC_array[k];
 
-    printf("Enter values for ProcPerPC:\n");
-    for (i=0; i<=MAXPV; i++){
-        scanf("%d",&ProcPerPC[i]);
-    }
-    
+            for (i=0;i<=MAXPV;i++){
+                printf("%d ",ProcPerPC[i]);
+            }   
+            printf("\n");
 
-	ComputeWait(wait,ProcPerPC,MAXPV);
+            ComputeWait(wait,ProcPerPC,MAXPV);
+            ExecuteBSchedule_plot_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
 
-    if (a_flag){
-        ExecuteBSchedule_analysis_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
-    }
+            for (i = 0; i <= MAXPV; i++) { 
+                free(wait[i]);
+            }
+            free(wait);
+            k++;
+        }
+    }    
     else{
-        ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
-    }
-	
+        printf("Enter value for MAXPV: ");
+        scanf("%d", &MAXPV);
 
+        printf("Enter value for MAXProcPerPC: ");
+        scanf("%d", &MAXProcPerPC);
+
+        int i;
+        int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
+        for (i = 0; i <= MAXPV; i++){
+            wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
+        }
+
+        int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
+
+        printf("Enter values for ProcPerPC:\n");
+        for (i=0; i<=MAXPV; i++){
+            scanf("%d",&ProcPerPC[i]);
+        }
+        
+
+        ComputeWait(wait,ProcPerPC,MAXPV);
+
+        if (a_flag){
+            ExecuteBSchedule_analysis_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+        }
+        else{
+            ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+        }
+    }
 	return EXIT_SUCCESS;
+}
+
+void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag){
+    int nmic, round; 
+	int i,j;
+    int count=0;
+    printf("Called\n");
+
+    FILE *filePointer;
+    filePointer = fopen(filename, "a") ; 
+
+	// compute the number of minor cycles
+	nmic = (1<<MAXPV);
+	// execute major cycle
+	for(round=0; round < nmic; round++) {
+		// execute minor cycle
+		for(i=0; i<=MAXPV; i++){
+			for(j=0; j<ProcPerPC[i]; j++){
+				if(wait[i][j]==0) {		
+					wait[i][j] = 1<<i;
+                    count++;
+				}
+				wait[i][j]--;
+			}
+		}
+	}
+    double av = (double)count/(double)nmic;
+    int perfect,dirty;
+    perfect=ceil(av);
+    dirty=floor(av); 
+    fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
+    fprintf(filePointer, "Workload (WL) = %d\n",count);
+    fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
+    fprintf(filePointer,"Perfect = %d\n",perfect);
+    fprintf(filePointer,"Dirty = %d\n",dirty);
+    fclose(filePointer);
 }
 
 /*executes the bscheduling algorithm to get the required schedule*/
