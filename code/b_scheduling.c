@@ -1,17 +1,23 @@
 #include <stdio.h>
 
-
+// for normal case
 #define MAXPV 4
 #define MAXProcPerPC 5
-// #define MAXPV 2
-// #define MAXProcPerPC 3     
-int wait[MAXPV][MAXProcPerPC];
-int ReverseBinary(int k, int d);
-
 int ProcPerPC[]={2,5,1,1,1};
-// int ProcPerPC[]={1,3,2,1};
+
+
+/*For worst case i.e only two process and one process runs at a higher frequency then the other*/
+
+
+// #define MAXPV 5
+// #define MAXProcPerPC 3  
+// int ProcPerPC[]={1,3,2,1,3,3};
+
+// #define MAXPV 3
+// #define MAXProcPerPC 3  
 // int ProcPerPC[]={1,1,0};
 
+int wait[MAXPV][MAXProcPerPC];
 void ExecuteBSchedule();
 void ComputeWait();
 int ReverseBinary(int k, int d);
@@ -19,14 +25,15 @@ int ReverseBinary(int k, int d);
 
 int main (int argc, char *argv[])
 {
+	// take option -f from the argv to print the output to a file -o means output to screen -b means both
 	ComputeWait();
 	ExecuteBSchedule();
 	return (0);
 }
 
+/*executes the bscheduling algorithm to get the required schedule*/
 void ExecuteBSchedule() {
 	int nmic, round; 
-
 	int i,j;
 
 	// compute the number of minor cycles
@@ -49,6 +56,7 @@ void ExecuteBSchedule() {
 	}
 }
 
+/*computes initial wait values for all the processes*/
 void ComputeWait() {
 	int start = 0; 
 	int slots = 1;
@@ -80,6 +88,3 @@ int ReverseBinary(int k, int d){
 	}
 	return(tmp);
 }
-
-
-
