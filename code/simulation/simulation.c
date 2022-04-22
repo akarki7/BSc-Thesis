@@ -15,13 +15,13 @@ volatile sig_atomic_t exitRequested = 0;
 int ProcPerPC[]={2,1,1};
 
 float X, Y;
-int SPEED=0, current_battery=100;
+int SPEED=2, current_battery=100;
 
 int wait[MAXPV][MAXProcPerPC];
 void ExecuteBSchedule();
 void ComputeWait();
 int ReverseBinary(int k, int d);
-void  INThandler(int sig);
+void INThandler(int sig);
 
 void horizontal_alignment();
 void forward();
@@ -108,7 +108,7 @@ int ReverseBinary(int k, int d){
 	return(tmp);
 }
 
-void  INThandler(int sig)
+void INThandler(int sig)
 {
     printf("\nExiting...\n");
     exitRequested=1;
@@ -131,8 +131,12 @@ void forward(){
 
 void obstacle_avoidance(){
 	float reading = forward_reading();
-	if (reading <=5){
+	if ((reading <=5) && (SPEED > 0)){
 		SPEED--;
+	}
+	if (SPEED == 0){
+		Y=Y+1;
+		obstacle_avoidance();
 	}
 }
 
