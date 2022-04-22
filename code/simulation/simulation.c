@@ -32,6 +32,7 @@ float left_meter_reading();
 float right_meter_reading();
 float forward_reading();
 void battery_decrease();
+void execute_function(int i, int j);
 
 
 int main (int argc, char *argv[])
@@ -162,4 +163,8 @@ float forward_reading()
 
 void battery_decrease(){
 	current_battery--;
+}
+
+void execute_function(int i, int j){
+	//execute a function based on the value of i and j
 }
