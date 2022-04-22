@@ -11,10 +11,11 @@
 volatile sig_atomic_t exitRequested = 0;
 
 #define MAXPV 3
-#define MAXProcPerPC 3  
-int ProcPerPC[]={1,1,0};
+#define MAXProcPerPC 2 
+int ProcPerPC[]={2,1,1};
 
-int X=5,Y,SPEED=0, current_battery;
+float X, Y;
+int SPEED=0, current_battery=100;
 
 int wait[MAXPV][MAXProcPerPC];
 void ExecuteBSchedule();
@@ -27,9 +28,9 @@ void forward();
 void obstacle_avoidance();
 void battery_check();
 
-void left_meter_reading();
-void right_meter_reading();
-void forward_reading();
+float left_meter_reading();
+float right_meter_reading();
+float forward_reading();
 void battery_decrease();
 
 
@@ -114,17 +115,47 @@ void  INThandler(int sig)
 }
 
 void horizontal_alignment(){
+	float h1= left_meter_reading();
+	float h2 = right_meter_reading();
+
+	float position;
+
+	position = (h1+h2)/2;
+
 
 }
 
 void forward(){
-
+	X= X + SPEED;
 }
 
 void obstacle_avoidance(){
-
+	float reading = forward_reading();
+	if (reading <=5){
+		SPEED--;
+	}
 }
 
 void battery_check(){
+	if (current_battery <=30){
+		printf("Need to charge or else battery will run out soon\n");
+	}
+}
+
+float left_meter_reading(){
+	// return a fake meter reading
+	return 1;
+}
+
+float right_meter_reading(){
+	return 1;
+}
+
+float forward_reading()
+{
+	return 5;
+}
+
+void battery_decrease(){
 	current_battery--;
 }
