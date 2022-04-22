@@ -10,7 +10,7 @@
 
 volatile sig_atomic_t exitRequested = 0;
 
-#define MAXPV 3
+#define MAXPV 2
 #define MAXProcPerPC 2 
 int ProcPerPC[]={2,1,1};
 
@@ -65,14 +65,15 @@ void ExecuteBSchedule() {
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
-					printf ("p%d.%d ", i, j);		
+					// printf ("p%d.%d ", i, j);
+					execute_function(i,j);
+					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);	
 					wait[i][j] = 1<<i;
 				}
 				wait[i][j]--;
 			}
 		}
-		printf ("\n");		
-
+		// printf ("\n");		
 	}
 }
 
@@ -122,8 +123,7 @@ void horizontal_alignment(){
 	float position;
 
 	position = (h1+h2)/2;
-
-
+	Y=position;
 }
 
 void forward(){
@@ -149,16 +149,16 @@ void battery_check(){
 
 float left_meter_reading(){
 	// return a fake meter reading
-	return 1;
+	return 4;
 }
 
 float right_meter_reading(){
-	return 1;
+	return 4;
 }
 
 float forward_reading()
 {
-	return 5;
+	return 15;
 }
 
 void battery_decrease(){
@@ -167,4 +167,23 @@ void battery_decrease(){
 
 void execute_function(int i, int j){
 	//execute a function based on the value of i and j
+	if (i==0){
+		if(j==0){
+			forward();
+		}
+		else{ // j==1 so this means only two processes are in PC=0
+			obstacle_avoidance();
+		}
+	}
+	else if (i==1)
+	{
+		if(j==0){
+			horizontal_alignment();
+		}	
+	}
+	else if (i==2){
+		if(j==0){
+			battery_check();
+		}
+	}
 }
