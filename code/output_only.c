@@ -12,6 +12,7 @@
 void ExecuteBSchedule(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 void ComputeWait(int **wait, int *ProcPerPC,int MAXPV);
 void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
+void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag);
 int ReverseBinary(int k, int d);
 
 
@@ -22,13 +23,14 @@ int main (int argc, char *argv[])
     int t_flag=0;
     int o_flag=0;
     int a_flag=0;
+    int p_flag=0;
 
     int MAXPV;
     int MAXProcPerPC;
 
     char *filename= malloc(50);
 
-    while((opt=getopt(argc,argv,"fo:ta"))!=-1)
+    while((opt=getopt(argc,argv,"fo:tap"))!=-1)
     {
         switch(opt)
         {
@@ -45,8 +47,11 @@ int main (int argc, char *argv[])
             case 'a':
                 a_flag=1;
                 break;
+            case 'p':
+                p_flag=1;
+                break;
             default:
-                fprintf(stderr, "usage: [-f] [-o filename] [-t]\n");
+                fprintf(stderr, "usage: [-f] [-o filename] [-t] [-p]\n");
                 exit(EXIT_FAILURE);
         }
     }
@@ -55,37 +60,127 @@ int main (int argc, char *argv[])
         strcpy(filename,"output.txt");
     }
 
-    printf("Enter value for MAXPV: ");
-    scanf("%d", &MAXPV);
+    if(p_flag){
+        // int MAXPV_array[]={2,4,5,7,8,9}; //hard coded values for plotting
+        // int MAXProcPerPC_array[]={5,10,10,15,15,20};
+        // int ProcPerPC_array[6][10]={{2,1,4},{5,8,8,8,9},{10,7,8,9,9,10},{5,5,10,10,9,3,4,5},{5,15,10,10,9,13,14,15,12},{12,15,11,11,11,10,10,10,10,11}};
+        
+        /*Same PV but different increasing number of processes for PV=4*/
+        int MAXPV_array[]={4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4}; //hard coded values for plotting
+        int MAXProcPerPC_array[]={5,5,5,10,10,10,10,10,10,15,15,20,25,30,35,40};
+        int ProcPerPC_array[16][5]={{1,1,1,1,1},{2,2,2,2,2},{3,3,3,3,3},{4,4,4,4,4},{5,5,5,5,5}, {6,6,6,6,6},{7,7,7,7,7},{8,8,8,8,8},{9,9,9,9,9},
+        {10,10,10,10,10},{15,15,15,15,15},{20,20,20,20,20},{25,25,25,25,25},{30,30,30,30,30},{35,35,35,35,35},{40,40,40,40,40}};
 
-    printf("Enter value for MAXProcPerPC: ");
-    scanf("%d", &MAXProcPerPC);
+        /*Same PV but different increasing number of processes for PV=10*/
+        // int MAXPV_array[]={10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}; //hard coded values for plotting
+        // int MAXProcPerPC_array[]={5,5,5,10,10,10,10,10,10,15,15,20,25,30,35,40};
+        // int ProcPerPC_array[16][11]={{1,1,1,1,1,1,1,1,1,1,1},{2,2,2,2,2,2,2,2,2,2,2},
+        // {3,3,3,3,3,3,3,3,3,3,3},{4,4,4,4,4,4,4,4,4,4,4},{5,5,5,5,5,5,5,5,5,5,5}, {6,6,6,6,6,6,6,6,6,6,6},
+        // {7,7,7,7,7,7,7,7,7,7,7},{8,8,8,8,8,8,8,8,8,8,8},{9,9,9,9,9,9,9,9,9,9,9},{10,10,10,10,10,10,10,10,10,10,10},
+        // {15,15,15,15,15,15,15,15,15,15,15},{20,20,20,20,20,20,20,20,20,20,20},{25,25,25,25,25,25,25,25,25,25,25},
+        // {30,30,30,30,30,30,30,30,30,30,30},{35,35,35,35,35,35,35,35,35,35,35},{40,40,40,40,40,40,40,40,40,40,40}};
 
-    int i;
-    int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
-    for (i = 0; i <= MAXPV; i++){
-        wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
-    }
+        int i;
+        
+        int k=0;
 
-    int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
+        int length = sizeof(MAXPV_array)/sizeof(MAXPV_array[0]);
+        while(k<length){
+            MAXPV=MAXPV_array[k];
+            MAXProcPerPC=MAXProcPerPC_array[k];
+            printf("k = %d %d %d\n",k,MAXPV,MAXProcPerPC);
+            int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
+            for (i = 0; i <= MAXPV; i++){
+                wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
+            }
 
-    printf("Enter values for ProcPerPC:\n");
-    for (i=0; i<=MAXPV; i++){
-        scanf("%d",&ProcPerPC[i]);
-    }
-    
+            int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
 
-	ComputeWait(wait,ProcPerPC,MAXPV);
+            ProcPerPC=ProcPerPC_array[k];
 
-    if (a_flag){
-        ExecuteBSchedule_analysis_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
-    }
+            for (i=0;i<=MAXPV;i++){
+                printf("%d ",ProcPerPC[i]);
+            }   
+            printf("\n");
+
+            ComputeWait(wait,ProcPerPC,MAXPV);
+            ExecuteBSchedule_plot_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+
+            for (i = 0; i <= MAXPV; i++) { 
+                free(wait[i]);
+            }
+            free(wait);
+            k++;
+        }
+    }    
     else{
-        ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
-    }
-	
+        printf("Enter value for MAXPV: ");
+        scanf("%d", &MAXPV);
 
+        printf("Enter value for MAXProcPerPC: ");
+        scanf("%d", &MAXProcPerPC);
+
+        int i;
+        int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
+        for (i = 0; i <= MAXPV; i++){
+            wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
+        }
+
+        int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
+
+        printf("Enter values for ProcPerPC:\n");
+        for (i=0; i<=MAXPV; i++){
+            scanf("%d",&ProcPerPC[i]);
+        }
+        
+
+        ComputeWait(wait,ProcPerPC,MAXPV);
+
+        if (a_flag){
+            ExecuteBSchedule_analysis_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+        }
+        else{
+            ExecuteBSchedule(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
+        }
+    }
 	return EXIT_SUCCESS;
+}
+
+void ExecuteBSchedule_plot_only(int *ProcPerPC, int **wait, char *filename, int MAXPV, int f_flag, int t_flag){
+    int nmic, round; 
+	int i,j;
+    int count=0;
+    FILE *filePointer, *filePointer2;
+    filePointer = fopen(filename, "a") ; 
+    filePointer2=fopen("plots/data.txt","a");
+
+	// compute the number of minor cycles
+	nmic = (1<<MAXPV);
+	// execute major cycle
+	for(round=0; round < nmic; round++) {
+		// execute minor cycle
+		for(i=0; i<=MAXPV; i++){
+			for(j=0; j<ProcPerPC[i]; j++){
+				if(wait[i][j]==0) {		
+					wait[i][j] = 1<<i;
+                    count++;
+				}
+				wait[i][j]--;
+			}
+		}
+	}
+    double av = (double)count/(double)nmic;
+    int perfect,dirty;
+    perfect=ceil(av);
+    dirty=floor(av); 
+    fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
+    fprintf(filePointer, "Workload (WL) = %d\n",count);
+    fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
+    fprintf(filePointer,"Perfect = %d\n",perfect);
+    fprintf(filePointer,"Dirty = %d\n",dirty);
+    fprintf(filePointer2,"%d %d %d %lf\n",dirty,perfect,count,av);
+    fclose(filePointer2);
+    fclose(filePointer);
 }
 
 /*executes the bscheduling algorithm to get the required schedule*/

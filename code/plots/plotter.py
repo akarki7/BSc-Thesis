@@ -1,39 +1,19 @@
 import matplotlib.pyplot as plt 
 
-def plot_example():
-    # x axis values 
-    x = [1,2,3] 
-    # corresponding y axis values 
-    y = [2,4,1] 
-        
-    # plotting the points  
-    plt.plot(x, y) 
-        
-    # naming the x axis 
-    plt.xlabel('x - axis') 
-    # naming the y axis 
-    plt.ylabel('y - axis') 
-        
-    # giving a title to my graph 
-    plt.title('My first graph!') 
-        
-    # function to show the plot 
-    plt.show() 
-
 def plot(x,y):
     # x axis values 
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y) 
+    plt.plot(x, y,marker='o', markerfacecolor='red', markersize=5) 
         
     # naming the x axis 
-    plt.xlabel('x - axis') 
+    plt.xlabel('Number of average processes per minor cycle (av)') 
     # naming the y axis 
-    plt.ylabel('y - axis') 
+    plt.ylabel('Balance') 
         
     # giving a title to my graph 
-    plt.title('Balance with growing av') 
+    # plt.title('Balance with growing av for MAXPV=4') 
         
     # function to show the plot 
     plt.show() 
