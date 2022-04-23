@@ -33,15 +33,18 @@ struct stack *obstacles_x;
 struct stack *obstacles_y;
 struct stack *left_readings; //h1
 struct stack *right_readings; //h2
+struct stack *forward_readings_data;
 
 volatile sig_atomic_t exitRequested = 0;
 
 #define MAXPV 2
 #define MAXProcPerPC 2 
-#define INF 999999999999
+
+
 int ProcPerPC[]={2,1,1};
 
 float X, Y;
+
 int SPEED=2, current_battery=100;
 
 int wait[MAXPV][MAXProcPerPC];
@@ -83,8 +86,9 @@ int main (int argc, char *argv[])
 	//create simulation environment
 	left_readings = newStack(100);
 	right_readings = newStack(100);
+	forward_readings_data = newStack(100);
 
-	int h1=5, h2=5,i=0;
+	int h1=5, h2=5,i=0, f=15;
 
 	while(i<100){
 		if (i==93){
@@ -102,10 +106,17 @@ int main (int argc, char *argv[])
 		{
 			h2=5;
 		}
+		else if (i==72){
+			f=5;
+		}
+		else if (i==73){
+			f=15;
+		}
 		// printf("Left:");
 		push(left_readings,h1);
 		// printf("Rightt:");
 		push(right_readings,h2);
+		push(forward_readings_data,f);
 		i++;
 	}
 
@@ -216,10 +227,14 @@ void obstacle_avoidance(){
 	float reading = forward_reading();
 	if ((reading <=5) && (SPEED > 0)){
 		SPEED--;
+		Y=Y+1;
 	}
-	if (SPEED == 0){
+	else if (SPEED == 0){
 		Y=Y+1; //might need to change this logic
 		obstacle_avoidance();
+	}
+	else{
+		SPEED=2;
 	}
 }
 
@@ -245,7 +260,8 @@ float right_meter_reading(){
 
 float forward_reading()
 {
-	return 15;
+	// need to send a value if the robot reads something within 6 else just send
+	return pop(forward_readings_data);
 }
 
 void battery_decrease(){

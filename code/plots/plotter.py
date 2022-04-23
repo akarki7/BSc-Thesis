@@ -28,7 +28,7 @@ def plot_robot_simulation(x,y):
     # plotting the points  
     plt.plot(x, y,'r') 
 
-    y_boundary_up =[10] * 121 
+    y_boundary_up =[10] * 116
     y_boundary_down =[0] * 30
     
     i=0
@@ -39,7 +39,7 @@ def plot_robot_simulation(x,y):
 
     i=0
 
-    while (i<36):
+    while (i<31):
         y_boundary_down.append(0)
         i=i+1
 
