@@ -26,15 +26,25 @@ def plot_robot_simulation(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,marker='o', markerfacecolor='red', markersize=5) 
-        
-    # naming the x axis 
-    plt.xlabel('Number of average processes per minor cycle (av)') 
-    # naming the y axis 
-    plt.ylabel('Balance') 
-        
-    # giving a title to my graph 
-    # plt.title('Balance with growing av for MAXPV=4') 
+    plt.plot(x, y,'r') 
+
+    y_boundary_up =[10] * 121 
+    y_boundary_down =[0] * 30
+    
+    i=0
+    
+    while (i<55):
+        y_boundary_down.append(-10)
+        i=i+1
+
+    i=0
+
+    while (i<36):
+        y_boundary_down.append(0)
+        i=i+1
+
+    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_down, 'k') 
         
     # function to show the plot 
     plt.show() 

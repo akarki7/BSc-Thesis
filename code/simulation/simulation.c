@@ -8,14 +8,37 @@
 #include <signal.h>
 #include <string.h>
 
-int obstacles_x [] = {5,20,40};
-int obstacles_y [] = {5,20,40};
-// means the obstacles are at coordinates 5,5 20,20 and 40,40
+struct stack
+{
+    int maxsize;    // define max capacity of the stack
+    int top;
+    int *items;
+};
+
+// Utility function to initialize the stack
+struct stack* newStack(int capacity)
+{
+    struct stack *pt = (struct stack*)malloc(sizeof(struct stack));
+ 
+    pt->maxsize = capacity;
+    pt->top = -1;
+    pt->items = (int*)malloc(sizeof(int) * capacity);
+ 
+    return pt;
+}
+
+// in another file create structure for stack
+// then create stacks for left_reading, right_reading and each time the function is called pop one and return the popped data
+struct stack *obstacles_x;
+struct stack *obstacles_y;
+struct stack *left_readings; //h1
+struct stack *right_readings; //h2
 
 volatile sig_atomic_t exitRequested = 0;
 
 #define MAXPV 2
 #define MAXProcPerPC 2 
+#define INF 999999999999
 int ProcPerPC[]={2,1,1};
 
 float X, Y;
@@ -38,13 +61,55 @@ float forward_reading();
 void battery_decrease();
 void execute_function(int i, int j);
 
+//for stacks
+// Utility function to return the size of the stack
+int size(struct stack *pt);
+// Utility function to check if the stack is empty or not
+int isEmpty(struct stack *pt);
+// Utility function to add an element `x` to the stack
+void push(struct stack *pt, int x);
+// Utility function to check if the stack is full or not
+int isFull(struct stack *pt);
+// Utility function to pop a top element from the stack
+int pop(struct stack *pt);
+
 
 int main (int argc, char *argv[])
 {
 	X = 0;
-	Y= 0;
+	Y= 5;
     signal(SIGINT,INThandler);
 	
+	//create simulation environment
+	left_readings = newStack(100);
+	right_readings = newStack(100);
+
+	int h1=5, h2=5,i=0;
+
+	while(i<100){
+		if (i==93){
+			h2=15;
+			h1=5;
+		}
+		else if(i==84){
+			h2=0;
+			h1=10;
+		}
+		else if (i==85){
+			h2=10;
+		}
+		else if (i==94)
+		{
+			h2=5;
+		}
+		// printf("Left:");
+		push(left_readings,h1);
+		// printf("Rightt:");
+		push(right_readings,h2);
+		i++;
+	}
+
+	//execution starts from here
     ComputeWait();
 	
     while(!exitRequested){
@@ -131,8 +196,15 @@ void horizontal_alignment(){
 	float h2 = right_meter_reading();
 
 	float position;
+	float final_h1, final_h2;
 
-	position = (h1+h2)/2;
+	final_h2 = Y-h2;
+	final_h1=Y + h1;
+
+	position = (final_h1+final_h2)/2;
+	// if(Y!=position){
+
+	// }
 	Y=position;
 }
 
@@ -146,24 +218,29 @@ void obstacle_avoidance(){
 		SPEED--;
 	}
 	if (SPEED == 0){
-		Y=Y+1;
+		Y=Y+1; //might need to change this logic
 		obstacle_avoidance();
 	}
 }
 
 void battery_check(){
-	if (current_battery <=30){
+	if (current_battery <=30 && current_battery > 10){
 		printf("Need to charge or else battery will run out soon\n");
+	}
+	else if (current_battery <= 10)
+	{
+		printf("Warning!!!Battery Too Low!!\n");
+		// move to side of a road and stop-> then charge battery to 100 and start moving
 	}
 }
 
 float left_meter_reading(){
 	// return a fake meter reading
-	return 4;
+	return pop(left_readings);
 }
 
 float right_meter_reading(){
-	return 4;
+	return pop(right_readings);
 }
 
 float forward_reading()
@@ -196,4 +273,45 @@ void execute_function(int i, int j){
 			battery_check();
 		}
 	}
+}
+
+int size(struct stack *pt) {
+    return pt->top + 1;
+}
+ 
+int isEmpty(struct stack *pt) {
+    return pt->top == -1;                   // or return size(pt) == 0;
+}
+ 
+int isFull(struct stack *pt) {
+    return pt->top == pt->maxsize - 1;      // or return size(pt) == pt->maxsize;
+}
+ 
+void push(struct stack *pt, int x)
+{
+    // check if the stack is already full. Then inserting an element would
+    // lead to stack overflow
+    if (isFull(pt))
+    {
+        printf("Overflow\nProgram Terminated\n");
+        exit(EXIT_FAILURE);
+    }
+ 
+    // printf("Inserting %d\n", x);
+ 
+    // add an element and increment the top's index
+    pt->items[++pt->top] = x;
+}
+ 
+int pop(struct stack *pt)
+{
+    // check for stack underflow
+    if (isEmpty(pt))
+    {
+        printf("Underflow\nProgram Terminated\n");
+        exit(EXIT_FAILURE);
+    }
+    // printf("Removing %d\n", peek(pt));
+    // decrement stack size by 1 and (optionally) return the popped element
+    return pt->items[pt->top--];
 }
