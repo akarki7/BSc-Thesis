@@ -8,6 +8,10 @@
 #include <signal.h>
 #include <string.h>
 
+int obstacles_x [] = {5,20,40};
+int obstacles_y [] = {5,20,40};
+// means the obstacles are at coordinates 5,5 20,20 and 40,40
+
 volatile sig_atomic_t exitRequested = 0;
 
 #define MAXPV 2
@@ -56,6 +60,9 @@ void ExecuteBSchedule() {
 	int nmic, round; 
 	int i,j;
 
+	FILE *filePointer;
+    filePointer = fopen("robot.txt", "a") ; 
+
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
 
@@ -67,7 +74,8 @@ void ExecuteBSchedule() {
 				if(wait[i][j]==0) {
 					// printf ("p%d.%d ", i, j);
 					execute_function(i,j);
-					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);	
+					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);
+					fprintf(filePointer,"%d %f %f %d\n",SPEED,X,Y,current_battery);	
 					wait[i][j] = 1<<i;
 				}
 				wait[i][j]--;
@@ -75,6 +83,8 @@ void ExecuteBSchedule() {
 		}
 		// printf ("\n");		
 	}
+	battery_decrease();
+	fclose(filePointer);
 }
 
 /*computes initial wait values for all the processes*/
