@@ -86,7 +86,7 @@ int main (int argc, char *argv[])
 	//create simulation environment
 	left_readings = newStack(100);
 	right_readings = newStack(100);
-	forward_readings_data = newStack(100);
+	forward_readings_data = newStack(200);
 
 	int h1=5, h2=5,i=0, f=15;
 
@@ -106,18 +106,28 @@ int main (int argc, char *argv[])
 		{
 			h2=5;
 		}
-		else if (i==72){
-			f=5;
-		}
-		else if (i==73){
-			f=15;
-		}
 		// printf("Left:");
 		push(left_readings,h1);
 		// printf("Rightt:");
 		push(right_readings,h2);
+		i++;
+	}
+
+	i=0;
+	while(i<200){
+		if (i==172){ //in 28th call of forward readings it should return 4
+			f=4;
+		}
+		else if (i==173){
+			f=15;
+		}
 		push(forward_readings_data,f);
 		i++;
+	}
+	
+	if (remove("robot.txt") != 0)
+	{
+		printf("Unable to delete the file");
 	}
 
 	//execution starts from here
@@ -225,6 +235,7 @@ void forward(){
 
 void obstacle_avoidance(){
 	float reading = forward_reading();
+	printf("Forward reading = %f\n",reading);
 	if ((reading <=5) && (SPEED > 0)){
 		SPEED--;
 		Y=Y+1;
@@ -262,6 +273,7 @@ float forward_reading()
 {
 	// need to send a value if the robot reads something within 6 else just send
 	return pop(forward_readings_data);
+	// return 15;
 }
 
 void battery_decrease(){
