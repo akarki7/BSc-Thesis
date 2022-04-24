@@ -21,14 +21,15 @@ def plot(x,y):
 def calculate_balance(dirty: int, perfect: int) -> float:
     return dirty/perfect
 
-def plot_robot_simulation(x,y):
+def plot_robot_simulation_1(x,y):
     # x axis values 
     # corresponding y axis values 
     
     # plotting the points  
     plt.plot(x, y,'r') 
 
-    y_boundary_up =[10] * 121
+    x_len= len(x)
+    y_boundary_up =[10] * x_len
     y_boundary_down =[0] * 30
     
     i=0
@@ -39,7 +40,40 @@ def plot_robot_simulation(x,y):
 
     i=0
 
-    while (i<36):
+    left=x_len-85
+
+    while (i<left):
+        y_boundary_down.append(0)
+        i=i+1
+
+    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_down, 'k') 
+        
+    # function to show the plot 
+    plt.show() 
+
+def plot_robot_simulation_2(x,y):
+    # x axis values 
+    # corresponding y axis values 
+    
+    # plotting the points  
+    plt.plot(x, y,'r') 
+
+    x_len= len(x)
+    y_boundary_up =[10] * x_len
+    y_boundary_down =[0] * 30
+    
+    i=0
+    
+    while (i<55):
+        y_boundary_down.append(-10)
+        i=i+1
+
+    i=0
+
+    left=x_len-85
+
+    while (i<left):
         y_boundary_down.append(0)
         i=i+1
 
@@ -69,6 +103,8 @@ def main():
         f.close()
         plot(x,y)
     elif (option == 2):
+        print("Choose your option:\n1-Simple Simulation\n2-Complex Simulation\n")
+        option_of_simulation = int(input())
         f=open(filename)
         #extract data and print to screen
         x=[]
@@ -79,7 +115,13 @@ def main():
             x.append(data[1])
 
         f.close()
-        plot_robot_simulation(x,y)
+        if(option_of_simulation ==1):
+            plot_robot_simulation_1(x,y)
+        elif (option_of_simulation ==2):
+            plot_robot_simulation_2(x,y)
+        else:
+            print("Invalid Input!!")
+            exit()
     else:
         print("Invalid Input!!")
         exit()

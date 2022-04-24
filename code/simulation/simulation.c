@@ -139,7 +139,7 @@ int main (int argc, char *argv[])
 	
     while(!exitRequested){
         ExecuteBSchedule();
-        sleep(5);
+        sleep(2);
     }
 
 	return (0);
