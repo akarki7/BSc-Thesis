@@ -88,14 +88,10 @@ int main (int argc, char *argv[])
 	right_readings = newStack(100);
 	forward_readings_data = newStack(200);
 
-	int h1=2, h2=2,i=0, f=15;
+	int h1=1, h2=1,i=0, f=15;
 
 	while(i<100){
-		if (i==63){
-			h1=2;
-			h2=0;
-		}
-		else if (i==64){
+		if (i==64){
 			h1=5;
 			h2=5;
 		}
@@ -139,13 +135,13 @@ int main (int argc, char *argv[])
 
 	i=0;
 	while(i<200){
-		if (i==171){ //in 28th call of forward readings it should return 4
+		if (i==128){ //in 28th call of forward readings it should return 4
 			f=4;
 		}
-		else if(i==170 || i==169){
+		else if(i==127 || i==126){
 			f=3;
 		}
-		else if (i==172){
+		else if (i==129){
 			f=15;
 		}
 		push(forward_readings_data,f);
@@ -251,9 +247,6 @@ void horizontal_alignment(){
 	final_h1=Y + h1;
 
 	position = (final_h1+final_h2)/2;
-	// if(Y!=position){
-
-	// }
 	Y=position;
 }
 
@@ -301,8 +294,8 @@ float right_meter_reading(){
 float forward_reading()
 {
 	// need to send a value if the robot reads something within 6 else just send
-	// return pop(forward_readings_data);
-	return 15;
+	return pop(forward_readings_data);
+	// return 15;
 }
 
 void battery_decrease(){
