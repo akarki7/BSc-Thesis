@@ -115,10 +115,13 @@ int main (int argc, char *argv[])
 
 	i=0;
 	while(i<200){
-		if (i==172){ //in 28th call of forward readings it should return 4
+		if (i==171){ //in 28th call of forward readings it should return 4
 			f=4;
 		}
-		else if (i==173){
+		else if(i==170 || i==169){
+			f=3;
+		}
+		else if (i==172){
 			f=15;
 		}
 		push(forward_readings_data,f);
@@ -235,14 +238,15 @@ void forward(){
 
 void obstacle_avoidance(){
 	float reading = forward_reading();
+	// float reading_second;
 	printf("Forward reading = %f\n",reading);
-	if ((reading <=5) && (SPEED > 0)){
+	if ((reading <5) && (SPEED > 0)){
 		SPEED--;
-		Y=Y+1;
 	}
 	else if (SPEED == 0){
 		Y=Y+1; //might need to change this logic
-		obstacle_avoidance();
+		SPEED=2;
+		X=X+reading;
 	}
 	else{
 		SPEED=2;
