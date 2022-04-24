@@ -88,10 +88,30 @@ int main (int argc, char *argv[])
 	right_readings = newStack(100);
 	forward_readings_data = newStack(200);
 
-	int h1=3, h2=3,i=0, f=15;
+	int h1=2, h2=2,i=0, f=15;
 
 	while(i<100){
-		if (i==78){
+		if (i==63){
+			h1=2;
+			h2=0;
+		}
+		else if (i==64){
+			h1=5;
+			h2=5;
+		}
+		else if(i==68){
+			h1=9;
+			h2=1;
+		}
+		else if (i==69){
+			h1=9;
+			h2=9;
+		}
+		else if (i==71){
+			h1=11;
+			h2=7;
+		}
+		else if (i==72){
 			h1=7;
 			h2=7;
 		}

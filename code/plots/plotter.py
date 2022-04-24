@@ -57,30 +57,55 @@ def plot_robot_simulation_2(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r', linewidth=4) 
+    plt.plot(x, y,'r') 
+        # naming the x axis 
+    plt.xlabel('Distance traveled by robot in forward direction (units)') 
 
     x_len= len(x)
     y_boundary_up =[10] * 85
     y_boundary_down =[0] * 30
     
     i=0
-
-    while (i<36):
+    while (i<66):
         y_boundary_up.append(4)
         i=i+1
 
-    
     i=0
-    while (i<91):
+    while (i<52):
+        y_boundary_up.append(8)
+        i=i+1
+
+    i=0
+    left_up= x_len-203
+    while (i<left_up):
+        y_boundary_up.append(5)
+        i=i+1
+
+    #done only from here
+    i=0
+    while (i<143):
         y_boundary_down.append(-10)
         i=i+1
 
+    i=0
+    while (i<30):
+        y_boundary_down.append(-2)
+        i=i+1
+    
+    i=0
+    left_down=x_len-203
+    while (i<left_down):
+        y_boundary_down.append(3)
+        i=i+1
 
-    plt.plot(x,y_boundary_up, 'k', linewidth=10)
-    plt.plot(x,y_boundary_down, 'k',  linewidth=10) 
+    #200
+
+    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_down, 'k') 
+    # plt.plot(x,y_boundary_down, 'k',  linewidth=7) 
         
     # function to show the plot 
-    plt.xticks([])
+    # plt.xticks([])
     plt.yticks([])
     plt.show() 
 
