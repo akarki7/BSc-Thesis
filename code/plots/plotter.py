@@ -57,30 +57,31 @@ def plot_robot_simulation_2(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r') 
+    plt.plot(x, y,'r', linewidth=4) 
 
     x_len= len(x)
-    y_boundary_up =[10] * x_len
+    y_boundary_up =[10] * 85
     y_boundary_down =[0] * 30
     
     i=0
+
+    while (i<36):
+        y_boundary_up.append(4)
+        i=i+1
+
     
-    while (i<55):
+    i=0
+    while (i<91):
         y_boundary_down.append(-10)
         i=i+1
 
-    i=0
 
-    left=x_len-85
-
-    while (i<left):
-        y_boundary_down.append(0)
-        i=i+1
-
-    plt.plot(x,y_boundary_up, 'k')
-    plt.plot(x,y_boundary_down, 'k') 
+    plt.plot(x,y_boundary_up, 'k', linewidth=10)
+    plt.plot(x,y_boundary_down, 'k',  linewidth=10) 
         
     # function to show the plot 
+    plt.xticks([])
+    plt.yticks([])
     plt.show() 
 
 def main():
