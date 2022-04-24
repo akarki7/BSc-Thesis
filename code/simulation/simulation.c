@@ -96,11 +96,12 @@ int main (int argc, char *argv[])
 			h1=5;
 		}
 		else if(i==84){
-			h2=0;
-			h1=10;
+			h1=9;
+			h2=1;
 		}
 		else if (i==85){
 			h2=10;
+			h1=10;
 		}
 		else if (i==94)
 		{
@@ -218,6 +219,7 @@ void INThandler(int sig)
 void horizontal_alignment(){
 	float h1= left_meter_reading();
 	float h2 = right_meter_reading();
+	printf("H1= %f, H2= %f\n",h1,h2);
 
 	float position;
 	float final_h1, final_h2;
