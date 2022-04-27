@@ -181,7 +181,7 @@ void ExecuteBSchedule() {
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
-					// printf ("p%d.%d ", i, j);
+					printf ("p%d.%d ", i, j);
 					execute_function(i,j);
 					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);
 					fprintf(filePointer,"%d %f %f %d\n",SPEED,X,Y,current_battery);	
@@ -272,7 +272,10 @@ void obstacle_avoidance(){
 }
 
 void battery_check(){
-	if (current_battery <=30 && current_battery > 10){
+	if(current_battery==0){
+		raise(SIG_IGN);
+	}
+	else if (current_battery <=30 && current_battery > 10){
 		printf("Need to charge or else battery will run out soon\n");
 	}
 	else if (current_battery <= 10)
@@ -299,7 +302,7 @@ float forward_reading()
 }
 
 void battery_decrease(){
-	current_battery--;
+	current_battery=current_battery-2;
 }
 
 void execute_function(int i, int j){
