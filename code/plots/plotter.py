@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt 
 
 def complex_multi_plot():
-    f2=open("plot2.csv")
-    f3=open("plot3.csv")
-    f4=open("plot4.csv")
+    f2=open("data/plot2.csv")
+    f3=open("data/plot3.csv")
+    f4=open("data/plot4.csv")
 
 
     x2=[]
@@ -56,9 +56,9 @@ def complex_multi_plot():
     f4.close()
 
 def multi_graph_same_plot():
-    f2=open("plot2.csv")
-    f3=open("plot3.csv")
-    f4=open("plot4.csv")
+    f2=open("data/plot2.csv")
+    f3=open("data/plot3.csv")
+    f4=open("data/plot4.csv")
 
 
     x2=[]
@@ -142,7 +142,7 @@ def plot_robot_simulation_1(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r') 
+    plt.plot(x, y,'r',label='Path travelled by robot') 
 
     x_len= len(x)
     y_boundary_up =[10] * x_len
@@ -162,10 +162,13 @@ def plot_robot_simulation_1(x,y):
         y_boundary_down.append(0)
         i=i+1
 
-    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_up, 'k', label='Walls')
     plt.plot(x,y_boundary_down, 'k') 
         
     # function to show the plot 
+    plt.xticks([])
+    plt.yticks([])
+    plt.legend()
     plt.show() 
 
 def plot_robot_simulation_2(x,y):
@@ -173,9 +176,9 @@ def plot_robot_simulation_2(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r') 
+    plt.plot(x, y,'r',label='Path travelled by robot') 
         # naming the x axis 
-    plt.xlabel('Distance traveled by robot in forward direction (units)') 
+    # plt.xlabel('Distance traveled by robot in forward direction (units)') 
 
     x_len= len(x)
     y_boundary_up =[10] * 85
@@ -216,13 +219,36 @@ def plot_robot_simulation_2(x,y):
 
     #200
 
-    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_up, 'k', label='Walls')
     plt.plot(x,y_boundary_down, 'k') 
     # plt.plot(x,y_boundary_down, 'k',  linewidth=7) 
         
     # function to show the plot 
-    # plt.xticks([])
+    plt.xticks([])
     plt.yticks([])
+    plt.legend()
+    plt.show() 
+
+def plot_robot_battery_level(x,battery_levels):
+    # plt.plot(x, battery_levels,'k',marker='o', markerfacecolor='red', markersize=5) 
+    x_battery_good= x[:36]
+    battery_good= battery_levels[:36]
+    plt.plot(x_battery_good, battery_good,'k', label='Normal battery life') 
+
+    x_warning = x[35:46]
+    battery_warning = battery_levels[35:46]
+    plt.plot(x_warning, battery_warning,'b', label='Charge soon warning')
+
+    x_low = x[45:]
+    battery_low = battery_levels[45:]
+    plt.plot(x_low, battery_low,'r', label='Low battery critical warning')
+
+    plt.xlabel('Distance traveled by robot in forward direction (units)')
+    plt.ylabel('Battery level returned by battery_check()') 
+    
+    #logic to spearate graphs for battery_level <=30(red) and >30 (black)
+    # function to show the plot 
+    plt.legend()
     plt.show() 
 
 def main():
@@ -243,29 +269,38 @@ def main():
             exit()
 
     elif (option == 2):
-        print("Choose your option:\n1-Simple Simulation\n2-Complex Simulation\n")
+        print("Choose your option:\n1-Simple Simulation\n2-Complex Simulation\n3-Battery Plots\n")
         option_of_simulation = int(input())
         
         print('Enter file name:')
         filename = input()
         f=open(filename)
-        #extract data and print to screen
-        x=[]
-        y=[]
-        for line in f:
-            data=[float(x) for x in line.split()]
-            y.append(data[2])
-            x.append(data[1])
 
-        f.close()
-
-        if(option_of_simulation ==1):
-            plot_robot_simulation_1(x,y)
-        elif (option_of_simulation ==2):
-            plot_robot_simulation_2(x,y)
+        if(option_of_simulation >0 and option_of_simulation <=2):
+            #extract data and print to screen
+            x=[]
+            y=[]
+            for line in f:
+                data=[float(x) for x in line.split()]
+                y.append(data[2])
+                x.append(data[1])
+            if(option_of_simulation ==1):
+                plot_robot_simulation_1(x,y)
+            elif (option_of_simulation ==2):
+                plot_robot_simulation_2(x,y)
+        elif (option_of_simulation ==3):
+            x=[]
+            battery_levels=[]
+            for line in f:
+                data=[float(x) for x in line.split()]
+                battery_levels.append(data[1])
+                x.append(data[0])
+            plot_robot_battery_level(x,battery_levels)
         else:
             print("Invalid Input!!")
+            f.close()
             exit()
+        f.close()
     else:
         print("Invalid Input!!")
         exit()

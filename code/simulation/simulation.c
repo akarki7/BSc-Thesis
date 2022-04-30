@@ -156,9 +156,13 @@ void ExecuteBSchedule() {
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
 
+	double time_spent;
+	double need_to_sleep;
+
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
 		// execute minor cycle
+		clock_t begin= clock();
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
@@ -170,7 +174,14 @@ void ExecuteBSchedule() {
 				}
 				wait[i][j]--;
 			}
+			
 		}
+		clock_t end = clock();
+			time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //in microseconds
+			need_to_sleep=0.5-time_spent;
+			// printf("Time spent = %f",time_spent);
+			// printf("Sleep for = %lf s\n",need_to_sleep);			
+			sleep(need_to_sleep);
 		// printf ("\n");		
 	}
 	battery_decrease();
@@ -256,7 +267,10 @@ void obstacle_avoidance(){
 }
 
 void battery_check(){
-	if (current_battery <=30 && current_battery > 10){
+	if(current_battery==0){
+		raise(SIGINT);
+	}
+	else if (current_battery <=30 && current_battery > 10){
 		printf("Need to charge or else battery will run out soon\n");
 	}
 	else if (current_battery <= 10)
@@ -283,7 +297,7 @@ float forward_reading()
 }
 
 void battery_decrease(){
-	current_battery--;
+	current_battery=current_battery-2;
 }
 
 void execute_function(int i, int j){
