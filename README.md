@@ -9,6 +9,7 @@
 ---------------------------------------------
 * Make sure you have Ubuntu Linux OS. 
 * Make sure you have `make` installed on your device.
+* make sure you have python installed on your device.
 * Run `make` inside the code directory to execute the makefile and get two executables.
 * Run `make scheduling.out` to just compile the scheduling algorithm and then run `./scheduling.out`
 * Run `./main.out` 
@@ -25,12 +26,18 @@
 ## Folder and File Descriptions: (only the important files are listed)
 
     code
+    ├── plots
+        ├── data
+        ├── plotter.py
+    ├── simulation
+        ├── simulation.c
+        ├── simulation_complex.c
     ├── b_scheduling.c
-    ├── process_frequency_manipulator.c
     ├── main.c
+    ├── output_only.c
 
-    documentation
-    ├── 
+    outputs (stores important output obtained from the execution)
+    ├─ 
 
     latex
     ├── 
