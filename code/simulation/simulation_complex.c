@@ -273,7 +273,7 @@ void obstacle_avoidance(){
 
 void battery_check(){
 	if(current_battery==0){
-		raise(SIG_IGN);
+		raise(SIGINT);
 	}
 	else if (current_battery <=30 && current_battery > 10){
 		printf("Need to charge or else battery will run out soon\n");
