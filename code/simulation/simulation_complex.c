@@ -150,7 +150,11 @@ int main (int argc, char *argv[])
 	
 	if (remove("robot.txt") != 0)
 	{
-		printf("Unable to delete the file");
+		printf("Unable to delete the file robot.txt");
+	}
+	if (remove("battery.txt") != 0)
+	{
+		printf("Unable to delete the file battery.txt");
 	}
 
 	//execution starts from here
@@ -169,8 +173,11 @@ void ExecuteBSchedule() {
 	int nmic, round; 
 	int i,j;
 
+	double time_spent;
+	double need_to_sleep;
+
 	FILE *filePointer;
-    filePointer = fopen("robot.txt", "a") ; 
+    filePointer = fopen("robot.txt", "a");
 
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
@@ -178,6 +185,7 @@ void ExecuteBSchedule() {
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
 		// execute minor cycle
+		clock_t begin= clock();
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
@@ -190,6 +198,12 @@ void ExecuteBSchedule() {
 				wait[i][j]--;
 			}
 		}
+		clock_t end = clock();
+		time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //in microseconds
+		need_to_sleep=0.5-time_spent;
+		// printf("Time spent = %f",time_spent);
+		// printf("Sleep for = %lf s\n",need_to_sleep);			
+		sleep(need_to_sleep);
 		// printf ("\n");		
 	}
 	battery_decrease();
@@ -272,6 +286,10 @@ void obstacle_avoidance(){
 }
 
 void battery_check(){
+	FILE *filePointer2;
+    filePointer2 = fopen("battery.txt", "a");  
+	fprintf(filePointer2,"%f %d\n",X,current_battery);
+
 	if(current_battery==0){
 		raise(SIGINT);
 	}
@@ -283,6 +301,7 @@ void battery_check(){
 		printf("Warning!!!Battery Too Low!!\n");
 		// move to side of a road and stop-> then charge battery to 100 and start moving
 	}
+	fclose(filePointer2);
 }
 
 float left_meter_reading(){

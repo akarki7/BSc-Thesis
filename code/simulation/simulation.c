@@ -162,8 +162,8 @@ void ExecuteBSchedule() {
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
 		// execute minor cycle
+		clock_t begin= clock();
 		for(i=0; i<=MAXPV; i++){
-			clock_t begin= clock();
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
 					// printf ("p%d.%d ", i, j);
@@ -174,14 +174,15 @@ void ExecuteBSchedule() {
 				}
 				wait[i][j]--;
 			}
-			clock_t end = clock();
+			
+		}
+		clock_t end = clock();
 			time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //in microseconds
 			need_to_sleep=0.5-time_spent;
 			// printf("Time spent = %f",time_spent);
 			// printf("Sleep for = %lf s\n",need_to_sleep);			
 			sleep(need_to_sleep);
-		}
-		printf ("\n");		
+		// printf ("\n");		
 	}
 	battery_decrease();
 	fclose(filePointer);

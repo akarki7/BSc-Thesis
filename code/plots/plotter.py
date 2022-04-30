@@ -230,7 +230,7 @@ def plot_robot_simulation_2(x,y):
     plt.show() 
 
 def plot_robot_battery_level(x,battery_levels):
-    plt.plot(x, battery_levels,'k') 
+    plt.plot(x, battery_levels,'k',marker='o', markerfacecolor='red', markersize=5) 
     plt.xlabel('Distance traveled by robot in forward direction (units)')
     plt.ylabel('Battery level returned by battery_check()') 
     
