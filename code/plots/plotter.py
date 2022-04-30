@@ -142,7 +142,7 @@ def plot_robot_simulation_1(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r') 
+    plt.plot(x, y,'r',label='Path travelled by robot') 
 
     x_len= len(x)
     y_boundary_up =[10] * x_len
@@ -162,10 +162,13 @@ def plot_robot_simulation_1(x,y):
         y_boundary_down.append(0)
         i=i+1
 
-    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_up, 'k', label='Walls')
     plt.plot(x,y_boundary_down, 'k') 
         
     # function to show the plot 
+    plt.xticks([])
+    plt.yticks([])
+    plt.legend()
     plt.show() 
 
 def plot_robot_simulation_2(x,y):
@@ -173,9 +176,9 @@ def plot_robot_simulation_2(x,y):
     # corresponding y axis values 
     
     # plotting the points  
-    plt.plot(x, y,'r') 
+    plt.plot(x, y,'r',label='Path travelled by robot') 
         # naming the x axis 
-    plt.xlabel('Distance traveled by robot in forward direction (units)') 
+    # plt.xlabel('Distance traveled by robot in forward direction (units)') 
 
     x_len= len(x)
     y_boundary_up =[10] * 85
@@ -216,13 +219,14 @@ def plot_robot_simulation_2(x,y):
 
     #200
 
-    plt.plot(x,y_boundary_up, 'k')
+    plt.plot(x,y_boundary_up, 'k', label='Walls')
     plt.plot(x,y_boundary_down, 'k') 
     # plt.plot(x,y_boundary_down, 'k',  linewidth=7) 
         
     # function to show the plot 
-    # plt.xticks([])
+    plt.xticks([])
     plt.yticks([])
+    plt.legend()
     plt.show() 
 
 def main():
