@@ -229,6 +229,15 @@ def plot_robot_simulation_2(x,y):
     plt.legend()
     plt.show() 
 
+def plot_robot_battery_level(x,battery_levels):
+    plt.plot(x, battery_levels,'k') 
+    plt.xlabel('Distance traveled by robot in forward direction (units)')
+    plt.ylabel('Battery level returned by battery_check()') 
+    
+    #logic to spearate graphs for battery_level <=30(red) and >30 (black)
+    # function to show the plot 
+    plt.show() 
+
 def main():
     print("Choose your option:\n1-Balance Plot\n2-Simulation Plot\n")
     option = int(input())
@@ -247,29 +256,38 @@ def main():
             exit()
 
     elif (option == 2):
-        print("Choose your option:\n1-Simple Simulation\n2-Complex Simulation\n")
+        print("Choose your option:\n1-Simple Simulation\n2-Complex Simulation\n3-Battery Plots\n")
         option_of_simulation = int(input())
         
         print('Enter file name:')
         filename = input()
         f=open(filename)
-        #extract data and print to screen
-        x=[]
-        y=[]
-        for line in f:
-            data=[float(x) for x in line.split()]
-            y.append(data[2])
-            x.append(data[1])
 
-        f.close()
-
-        if(option_of_simulation ==1):
-            plot_robot_simulation_1(x,y)
-        elif (option_of_simulation ==2):
-            plot_robot_simulation_2(x,y)
+        if(option_of_simulation >0 and option_of_simulation <=2):
+            #extract data and print to screen
+            x=[]
+            y=[]
+            for line in f:
+                data=[float(x) for x in line.split()]
+                y.append(data[2])
+                x.append(data[1])
+            if(option_of_simulation ==1):
+                plot_robot_simulation_1(x,y)
+            elif (option_of_simulation ==2):
+                plot_robot_simulation_2(x,y)
+        elif (option_of_simulation ==3):
+            x=[]
+            battery_levels=[]
+            for line in f:
+                data=[float(x) for x in line.split()]
+                battery_levels.append(data[1])
+                x.append(data[0])
+            plot_robot_battery_level(x,battery_levels)
         else:
             print("Invalid Input!!")
+            f.close()
             exit()
+        f.close()
     else:
         print("Invalid Input!!")
         exit()
