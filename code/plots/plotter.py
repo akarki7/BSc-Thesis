@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt 
 
 def complex_multi_plot():
-    f2=open("plot2.csv")
-    f3=open("plot3.csv")
-    f4=open("plot4.csv")
+    f2=open("data/plot2.csv")
+    f3=open("data/plot3.csv")
+    f4=open("data/plot4.csv")
 
 
     x2=[]
@@ -56,9 +56,9 @@ def complex_multi_plot():
     f4.close()
 
 def multi_graph_same_plot():
-    f2=open("plot2.csv")
-    f3=open("plot3.csv")
-    f4=open("plot4.csv")
+    f2=open("data/plot2.csv")
+    f3=open("data/plot3.csv")
+    f4=open("data/plot4.csv")
 
 
     x2=[]
