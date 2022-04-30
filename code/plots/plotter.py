@@ -230,12 +230,25 @@ def plot_robot_simulation_2(x,y):
     plt.show() 
 
 def plot_robot_battery_level(x,battery_levels):
-    plt.plot(x, battery_levels,'k',marker='o', markerfacecolor='red', markersize=5) 
+    # plt.plot(x, battery_levels,'k',marker='o', markerfacecolor='red', markersize=5) 
+    x_battery_good= x[:36]
+    battery_good= battery_levels[:36]
+    plt.plot(x_battery_good, battery_good,'k', label='Normal battery life') 
+
+    x_warning = x[35:46]
+    battery_warning = battery_levels[35:46]
+    plt.plot(x_warning, battery_warning,'b', label='Charge soon warning')
+
+    x_low = x[45:]
+    battery_low = battery_levels[45:]
+    plt.plot(x_low, battery_low,'r', label='Low battery critical warning')
+
     plt.xlabel('Distance traveled by robot in forward direction (units)')
     plt.ylabel('Battery level returned by battery_check()') 
     
     #logic to spearate graphs for battery_level <=30(red) and >30 (black)
     # function to show the plot 
+    plt.legend()
     plt.show() 
 
 def main():
