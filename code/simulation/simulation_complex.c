@@ -45,7 +45,8 @@ int ProcPerPC[]={2,1,1};
 
 float X, Y;
 
-int SPEED=2, current_battery=100;
+int SPEED=2;
+float current_battery=100;
 
 int wait[MAXPV][MAXProcPerPC];
 void ExecuteBSchedule();
@@ -61,7 +62,7 @@ void battery_check();
 float left_meter_reading();
 float right_meter_reading();
 float forward_reading();
-void battery_decrease();
+void battery_decrease(float dec);
 void execute_function(int i, int j);
 
 //for stacks
@@ -191,8 +192,8 @@ void ExecuteBSchedule() {
 				if(wait[i][j]==0) {
 					printf ("p%d.%d ", i, j);
 					execute_function(i,j);
-					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);
-					fprintf(filePointer,"%d %f %f %d\n",SPEED,X,Y,current_battery);	
+					printf("Speed = %d, X=%f, Y= %f, Battery=%f\n",SPEED,X,Y,current_battery);
+					fprintf(filePointer,"%d %f %f %f\n",SPEED,X,Y,current_battery);	
 					wait[i][j] = 1<<i;
 				}
 				wait[i][j]--;
@@ -206,7 +207,6 @@ void ExecuteBSchedule() {
 		sleep(need_to_sleep);
 		// printf ("\n");		
 	}
-	battery_decrease();
 	fclose(filePointer);
 }
 
@@ -247,6 +247,7 @@ void INThandler(int sig)
 {
     printf("\nExiting...\n");
     exitRequested=1;
+	exit(EXIT_SUCCESS);
 }
 
 void horizontal_alignment(){
@@ -254,18 +255,29 @@ void horizontal_alignment(){
 	float h2 = right_meter_reading();
 	printf("H1= %f, H2= %f\n",h1,h2);
 
-	float position;
+	float position, old_Y;
 	float final_h1, final_h2;
+
+	old_Y = Y;
 
 	final_h2 = Y-h2;
 	final_h1=Y + h1;
 
 	position = (final_h1+final_h2)/2;
 	Y=position;
+
+	if (Y== old_Y){
+		battery_decrease(0.5);	
+	}
+	else{
+		battery_decrease(2);
+	}
+	
 }
 
 void forward(){
 	X= X + SPEED;
+	battery_decrease(0.25);
 }
 
 void obstacle_avoidance(){
@@ -274,23 +286,26 @@ void obstacle_avoidance(){
 	printf("Forward reading = %f\n",reading);
 	if ((reading <5) && (SPEED > 0)){
 		SPEED--;
+		battery_decrease(1); // takes more effort to slow down the robot
 	}
 	else if (SPEED == 0){
 		Y=Y+1; //might need to change this logic
 		SPEED=2;
 		X=X+reading;
+		battery_decrease(2); //takes more effort to speed up from 0
 	}
 	else{
 		SPEED=2;
+		battery_decrease(0.25);
 	}
 }
 
 void battery_check(){
 	FILE *filePointer2;
     filePointer2 = fopen("battery.txt", "a");  
-	fprintf(filePointer2,"%f %d\n",X,current_battery);
-
-	if(current_battery==0){
+	fprintf(filePointer2,"%f %f\n",X,current_battery);
+ 
+	if(current_battery<=0){
 		raise(SIGINT);
 	}
 	else if (current_battery <=30 && current_battery > 10){
@@ -298,10 +313,11 @@ void battery_check(){
 	}
 	else if (current_battery <= 10)
 	{
-		printf("Warning!!!Battery Too Low!!\n");
+		printf("Critical!!!Battery Too Low!!\n");
 		// move to side of a road and stop-> then charge battery to 100 and start moving
 	}
 	fclose(filePointer2);
+	battery_decrease(1);
 }
 
 float left_meter_reading(){
@@ -320,8 +336,15 @@ float forward_reading()
 	// return 15;
 }
 
-void battery_decrease(){
-	current_battery=current_battery-2;
+void battery_decrease(float dec){
+	// printf("Decreasing by %f\n",dec);
+	if (current_battery - dec <=0){
+		current_battery = 0;
+		battery_check();
+	}
+	else{
+		current_battery=current_battery-dec;
+	}
 }
 
 void execute_function(int i, int j){
