@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt 
 
 def complex_multi_plot():
-    f2=open("data/plot2.csv")
-    f3=open("data/plot3.csv")
-    f4=open("data/plot4.csv")
+    f2=open("data/data_maxpv_4.csv")
+    f3=open("data/data_maxpv_7.csv")
+    f4=open("data/data_maxpv_10.csv")
 
 
     x2=[]
@@ -33,7 +33,6 @@ def complex_multi_plot():
     for i in range(len(x2)): # 0 to len(X2)-1
         x_avg=(x2[i]+x3[i]+x4[i])/3
         y_avg=(y2[i]+y3[i]+y4[i])/3
-        print(x_avg,y_avg)
         x.append(x_avg)
         y.append(y_avg)
     
@@ -56,9 +55,9 @@ def complex_multi_plot():
     f4.close()
 
 def multi_graph_same_plot():
-    f2=open("data/plot2.csv")
-    f3=open("data/plot3.csv")
-    f4=open("data/plot4.csv")
+    f2=open("data/data_maxpv_4.csv")
+    f3=open("data/data_maxpv_7.csv")
+    f4=open("data/data_maxpv_10.csv")
 
 
     x2=[]
