@@ -8,6 +8,43 @@
 #include <signal.h>
 #include <string.h>
 
+#define MAXPV 2
+#define MAXProcPerPC 2 
+
+
+int ProcPerPC[]={2,1,1};
+int wait[MAXPV][MAXProcPerPC];
+
+float X, Y;
+int SPEED=2;
+float current_battery=100;
+
+struct stack *obstacles_x;
+struct stack *obstacles_y;
+struct stack *left_readings; //h1
+struct stack *right_readings; //h2
+struct stack *forward_readings_data;
+
+volatile sig_atomic_t exitRequested = 0;
+
+
+void ExecuteBSchedule();
+void ComputeWait();
+int ReverseBinary(int k, int d);
+void INThandler(int sig);
+void create_simulation_environment();
+
+void horizontal_alignment();
+void forward();
+void obstacle_avoidance();
+void battery_check();
+
+float left_meter_reading();
+float right_meter_reading();
+float forward_reading();
+void battery_decrease(float dec);
+void execute_function(int i, int j);
+
 struct stack
 {
     int maxsize;    // define max capacity of the stack
@@ -27,44 +64,6 @@ struct stack* newStack(int capacity)
     return pt;
 }
 
-// in another file create structure for stack
-// then create stacks for left_reading, right_reading and each time the function is called pop one and return the popped data
-struct stack *obstacles_x;
-struct stack *obstacles_y;
-struct stack *left_readings; //h1
-struct stack *right_readings; //h2
-struct stack *forward_readings_data;
-
-volatile sig_atomic_t exitRequested = 0;
-
-#define MAXPV 2
-#define MAXProcPerPC 2 
-
-
-int ProcPerPC[]={2,1,1};
-
-float X, Y;
-
-int SPEED=2, current_battery=100;
-
-int wait[MAXPV][MAXProcPerPC];
-void ExecuteBSchedule();
-void ComputeWait();
-int ReverseBinary(int k, int d);
-void INThandler(int sig);
-
-void horizontal_alignment();
-void forward();
-void obstacle_avoidance();
-void battery_check();
-
-float left_meter_reading();
-float right_meter_reading();
-float forward_reading();
-void battery_decrease();
-void execute_function(int i, int j);
-
-//for stacks
 // Utility function to return the size of the stack
 int size(struct stack *pt);
 // Utility function to check if the stack is empty or not
@@ -76,14 +75,32 @@ int isFull(struct stack *pt);
 // Utility function to pop a top element from the stack
 int pop(struct stack *pt);
 
-
 int main (int argc, char *argv[])
 {
 	X = 0;
 	Y= 5;
     signal(SIGINT,INThandler);
 	
-	//create simulation environment
+	if (remove("robot.txt") != 0)
+	{
+		printf("Unable to delete the file");
+	}
+
+	create_simulation_environment();
+
+	//execution starts from here
+    ComputeWait();
+	
+    while(!exitRequested){
+        ExecuteBSchedule();
+        sleep(2);
+    }
+
+	return (0);
+}
+
+void create_simulation_environment(){
+//create simulation environment
 	left_readings = newStack(100);
 	right_readings = newStack(100);
 	forward_readings_data = newStack(200);
@@ -128,21 +145,6 @@ int main (int argc, char *argv[])
 		push(forward_readings_data,f);
 		i++;
 	}
-	
-	if (remove("robot.txt") != 0)
-	{
-		printf("Unable to delete the file");
-	}
-
-	//execution starts from here
-    ComputeWait();
-	
-    while(!exitRequested){
-        ExecuteBSchedule();
-        sleep(2);
-    }
-
-	return (0);
 }
 
 /*executes the bscheduling algorithm to get the required schedule*/
@@ -156,35 +158,24 @@ void ExecuteBSchedule() {
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
 
-	double time_spent;
-	double need_to_sleep;
-
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
 		// execute minor cycle
-		clock_t begin= clock();
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
 					// printf ("p%d.%d ", i, j);
 					execute_function(i,j);
-					printf("Speed = %d, X=%f, Y= %f, Battery=%d\n",SPEED,X,Y,current_battery);
-					fprintf(filePointer,"%d %f %f %d\n",SPEED,X,Y,current_battery);	
+					printf("Speed = %d, X=%f, Y= %f, Battery=%f\n",SPEED,X,Y,current_battery);
+					fprintf(filePointer,"%d %f %f\n",SPEED,X,Y);	
 					wait[i][j] = 1<<i;
 				}
 				wait[i][j]--;
 			}
 			
 		}
-		clock_t end = clock();
-			time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //in microseconds
-			need_to_sleep=0.5-time_spent;
-			// printf("Time spent = %f",time_spent);
-			// printf("Sleep for = %lf s\n",need_to_sleep);			
-			sleep(need_to_sleep);
 		// printf ("\n");		
 	}
-	battery_decrease();
 	fclose(filePointer);
 }
 
@@ -225,49 +216,58 @@ void INThandler(int sig)
 {
     printf("\nExiting...\n");
     exitRequested=1;
+	exit(EXIT_SUCCESS);
 }
 
 void horizontal_alignment(){
 	float h1= left_meter_reading();
 	float h2 = right_meter_reading();
-	printf("H1= %f, H2= %f\n",h1,h2);
 
-	float position;
+	float position, old_Y;
 	float final_h1, final_h2;
+
+	old_Y = Y;
 
 	final_h2 = Y-h2;
 	final_h1=Y + h1;
 
 	position = (final_h1+final_h2)/2;
-	// if(Y!=position){
-
-	// }
 	Y=position;
+
+	if (Y== old_Y){
+		battery_decrease(0.5);	
+	}
+	else{
+		battery_decrease(2);
+	}
+	
 }
 
 void forward(){
 	X= X + SPEED;
+	battery_decrease(0.25);
 }
 
 void obstacle_avoidance(){
 	float reading = forward_reading();
-	// float reading_second;
-	printf("Forward reading = %f\n",reading);
 	if ((reading <5) && (SPEED > 0)){
 		SPEED--;
+		battery_decrease(1);
 	}
 	else if (SPEED == 0){
-		Y=Y+1; //might need to change this logic
+		Y=Y+1;
 		SPEED=2;
 		X=X+reading;
+		battery_decrease(2);
 	}
 	else{
 		SPEED=2;
+		battery_decrease(0.25);
 	}
 }
 
 void battery_check(){
-	if(current_battery==0){
+	if(current_battery<=0){
 		raise(SIGINT);
 	}
 	else if (current_battery <=30 && current_battery > 10){
@@ -275,9 +275,9 @@ void battery_check(){
 	}
 	else if (current_battery <= 10)
 	{
-		printf("Warning!!!Battery Too Low!!\n");
-		// move to side of a road and stop-> then charge battery to 100 and start moving
+		printf("Critical!!!Battery Too Low!!\n");
 	}
+	battery_decrease(1);
 }
 
 float left_meter_reading(){
@@ -296,8 +296,14 @@ float forward_reading()
 	// return 15;
 }
 
-void battery_decrease(){
-	current_battery=current_battery-2;
+void battery_decrease(float dec){
+	if (current_battery - dec <=0){
+		current_battery = 0;
+		battery_check();
+	}
+	else{
+		current_battery=current_battery-dec;
+	}
 }
 
 void execute_function(int i, int j){
@@ -344,9 +350,6 @@ void push(struct stack *pt, int x)
         printf("Overflow\nProgram Terminated\n");
         exit(EXIT_FAILURE);
     }
- 
-    // printf("Inserting %d\n", x);
- 
     // add an element and increment the top's index
     pt->items[++pt->top] = x;
 }
@@ -359,7 +362,6 @@ int pop(struct stack *pt)
         printf("Underflow\nProgram Terminated\n");
         exit(EXIT_FAILURE);
     }
-    // printf("Removing %d\n", peek(pt));
     // decrement stack size by 1 and (optionally) return the popped element
     return pt->items[pt->top--];
 }
