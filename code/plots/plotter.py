@@ -231,16 +231,16 @@ def plot_robot_simulation_2(x,y):
 
 def plot_robot_battery_level(x,battery_levels):
     # plt.plot(x, battery_levels,'k',marker='o', markerfacecolor='red', markersize=5) 
-    x_battery_good= x[:36]
-    battery_good= battery_levels[:36]
+    x_battery_good= x[:17]
+    battery_good= battery_levels[:17]
     plt.plot(x_battery_good, battery_good,'k', label='Normal battery life') 
 
-    x_warning = x[35:46]
-    battery_warning = battery_levels[35:46]
+    x_warning = x[16:21]
+    battery_warning = battery_levels[16:21]
     plt.plot(x_warning, battery_warning,'b', label='Charge soon warning')
 
-    x_low = x[45:]
-    battery_low = battery_levels[45:]
+    x_low = x[20:]
+    battery_low = battery_levels[20:]
     plt.plot(x_low, battery_low,'r', label='Low battery critical warning')
 
     plt.xlabel('Distance traveled by robot in forward direction (units)')
