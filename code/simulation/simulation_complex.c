@@ -46,6 +46,7 @@ int ProcPerPC[]={2,1,1};
 float X, Y;
 
 int SPEED=2;
+int count=0;
 float current_battery=100;
 
 int wait[MAXPV][MAXProcPerPC];
@@ -163,6 +164,7 @@ int main (int argc, char *argv[])
 	
     while(!exitRequested){
         ExecuteBSchedule();
+		count++;
         sleep(2);
     }
 
@@ -247,6 +249,7 @@ void INThandler(int sig)
 {
     printf("\nExiting...\n");
     exitRequested=1;
+	printf("Total simulation time = %d seconds\n",count*2);
 	exit(EXIT_SUCCESS);
 }
 
