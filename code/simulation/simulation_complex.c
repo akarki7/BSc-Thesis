@@ -8,6 +8,43 @@
 #include <signal.h>
 #include <string.h>
 
+#define MAXPV 2
+#define MAXProcPerPC 2 
+
+
+int ProcPerPC[]={2,1,1};
+int wait[MAXPV][MAXProcPerPC];
+
+float X, Y;
+int SPEED=2;
+float current_battery=100;
+
+struct stack *obstacles_x;
+struct stack *obstacles_y;
+struct stack *left_readings; //h1
+struct stack *right_readings; //h2
+struct stack *forward_readings_data;
+
+volatile sig_atomic_t exitRequested = 0;
+
+
+void ExecuteBSchedule();
+void ComputeWait();
+int ReverseBinary(int k, int d);
+void INThandler(int sig);
+void create_simulation_environment();
+
+void horizontal_alignment();
+void forward();
+void obstacle_avoidance();
+void battery_check();
+
+float left_meter_reading();
+float right_meter_reading();
+float forward_reading();
+void battery_decrease(float dec);
+void execute_function(int i, int j);
+
 struct stack
 {
     int maxsize;    // define max capacity of the stack
@@ -27,45 +64,6 @@ struct stack* newStack(int capacity)
     return pt;
 }
 
-// in another file create structure for stack
-// then create stacks for left_reading, right_reading and each time the function is called pop one and return the popped data
-struct stack *obstacles_x;
-struct stack *obstacles_y;
-struct stack *left_readings; //h1
-struct stack *right_readings; //h2
-struct stack *forward_readings_data;
-
-volatile sig_atomic_t exitRequested = 0;
-
-#define MAXPV 2
-#define MAXProcPerPC 2 
-
-
-int ProcPerPC[]={2,1,1};
-
-float X, Y;
-
-int SPEED=2;
-float current_battery=100;
-
-int wait[MAXPV][MAXProcPerPC];
-void ExecuteBSchedule();
-void ComputeWait();
-int ReverseBinary(int k, int d);
-void INThandler(int sig);
-
-void horizontal_alignment();
-void forward();
-void obstacle_avoidance();
-void battery_check();
-
-float left_meter_reading();
-float right_meter_reading();
-float forward_reading();
-void battery_decrease(float dec);
-void execute_function(int i, int j);
-
-//for stacks
 // Utility function to return the size of the stack
 int size(struct stack *pt);
 // Utility function to check if the stack is empty or not
@@ -83,7 +81,30 @@ int main (int argc, char *argv[])
 	X = 0;
 	Y= 5;
     signal(SIGINT,INThandler);
+		
+	if (remove("robot.txt") != 0)
+	{
+		printf("Unable to delete the file robot.txt");
+	}
+	if (remove("battery.txt") != 0)
+	{
+		printf("Unable to delete the file battery.txt");
+	}
+
+	create_simulation_environment();
+
+	//execution starts from here
+    ComputeWait();
 	
+    while(!exitRequested){
+        ExecuteBSchedule();
+        sleep(2); //calling  B-schedule after every 2 seconds
+    }
+
+	return (0);
+}
+
+void create_simulation_environment(){
 	//create simulation environment
 	left_readings = newStack(100);
 	right_readings = newStack(100);
@@ -91,6 +112,7 @@ int main (int argc, char *argv[])
 
 	int h1=1, h2=1,i=0, f=15;
 
+	// in this while loop we initialize fake value of left and right sensor readings
 	while(i<100){
 		if (i==64){
 			h1=5;
@@ -127,16 +149,15 @@ int main (int argc, char *argv[])
 		else if(i==94){
 			h2=5;
 		}
-		// printf("Left:");
 		push(left_readings,h1);
-		// printf("Rightt:");
 		push(right_readings,h2);
 		i++;
 	}
 
 	i=0;
+	// in this while loop we initialize fake value of forward sensor
 	while(i<200){
-		if (i==128){ //in 28th call of forward readings it should return 4
+		if (i==128){
 			f=4;
 		}
 		else if(i==127 || i==126){
@@ -148,34 +169,12 @@ int main (int argc, char *argv[])
 		push(forward_readings_data,f);
 		i++;
 	}
-	
-	if (remove("robot.txt") != 0)
-	{
-		printf("Unable to delete the file robot.txt");
-	}
-	if (remove("battery.txt") != 0)
-	{
-		printf("Unable to delete the file battery.txt");
-	}
-
-	//execution starts from here
-    ComputeWait();
-	
-    while(!exitRequested){
-        ExecuteBSchedule();
-        sleep(2);
-    }
-
-	return (0);
 }
 
 /*executes the bscheduling algorithm to get the required schedule*/
 void ExecuteBSchedule() {
 	int nmic, round; 
 	int i,j;
-
-	double time_spent;
-	double need_to_sleep;
 
 	FILE *filePointer;
     filePointer = fopen("robot.txt", "a");
@@ -186,25 +185,18 @@ void ExecuteBSchedule() {
 	// execute major cycle
 	for(round=0; round < nmic; round++) {
 		// execute minor cycle
-		clock_t begin= clock();
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
 					printf ("p%d.%d ", i, j);
 					execute_function(i,j);
 					printf("Speed = %d, X=%f, Y= %f, Battery=%f\n",SPEED,X,Y,current_battery);
-					fprintf(filePointer,"%d %f %f %f\n",SPEED,X,Y,current_battery);	
+					fprintf(filePointer,"%d %f %f\n",SPEED,X,Y);	
 					wait[i][j] = 1<<i;
 				}
 				wait[i][j]--;
 			}
 		}
-		clock_t end = clock();
-		time_spent = (double)(end - begin) / CLOCKS_PER_SEC; //in microseconds
-		need_to_sleep=0.5-time_spent;
-		// printf("Time spent = %f",time_spent);
-		// printf("Sleep for = %lf s\n",need_to_sleep);			
-		sleep(need_to_sleep);
 		// printf ("\n");		
 	}
 	fclose(filePointer);
@@ -253,7 +245,6 @@ void INThandler(int sig)
 void horizontal_alignment(){
 	float h1= left_meter_reading();
 	float h2 = right_meter_reading();
-	printf("H1= %f, H2= %f\n",h1,h2);
 
 	float position, old_Y;
 	float final_h1, final_h2;
@@ -282,17 +273,15 @@ void forward(){
 
 void obstacle_avoidance(){
 	float reading = forward_reading();
-	// float reading_second;
-	printf("Forward reading = %f\n",reading);
 	if ((reading <5) && (SPEED > 0)){
 		SPEED--;
-		battery_decrease(1); // takes more effort to slow down the robot
+		battery_decrease(1);
 	}
 	else if (SPEED == 0){
-		Y=Y+1; //might need to change this logic
+		Y=Y+1;
 		SPEED=2;
 		X=X+reading;
-		battery_decrease(2); //takes more effort to speed up from 0
+		battery_decrease(2);
 	}
 	else{
 		SPEED=2;
@@ -314,7 +303,6 @@ void battery_check(){
 	else if (current_battery <= 10)
 	{
 		printf("Critical!!!Battery Too Low!!\n");
-		// move to side of a road and stop-> then charge battery to 100 and start moving
 	}
 	fclose(filePointer2);
 	battery_decrease(1);
@@ -331,13 +319,10 @@ float right_meter_reading(){
 
 float forward_reading()
 {
-	// need to send a value if the robot reads something within 6 else just send
 	return pop(forward_readings_data);
-	// return 15;
 }
 
 void battery_decrease(float dec){
-	// printf("Decreasing by %f\n",dec);
 	if (current_battery - dec <=0){
 		current_battery = 0;
 		battery_check();
@@ -392,8 +377,6 @@ void push(struct stack *pt, int x)
         exit(EXIT_FAILURE);
     }
  
-    // printf("Inserting %d\n", x);
- 
     // add an element and increment the top's index
     pt->items[++pt->top] = x;
 }
@@ -406,7 +389,5 @@ int pop(struct stack *pt)
         printf("Underflow\nProgram Terminated\n");
         exit(EXIT_FAILURE);
     }
-    // printf("Removing %d\n", peek(pt));
-    // decrement stack size by 1 and (optionally) return the popped element
     return pt->items[pt->top--];
 }
