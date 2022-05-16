@@ -14,8 +14,9 @@ output.out: output_only.c
 
 deleteofiles:
 	rm -f *.o
+	rm -f *.txt
 	
 deleteexec:
-	rm -f scheduling.out main.out
+	rm -f scheduling.out main.out output.out
 
 deleteall: deleteexec deleteofiles
