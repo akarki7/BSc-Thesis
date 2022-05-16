@@ -40,7 +40,7 @@
 
 ## Steps to create plots
 ---------------------------------------------
-* From the directory /code/plots run `make run`
+* From the directory /code/plots execute `make run`
 * Choose the options as asked in the screen to get desired graph plots
 
 
