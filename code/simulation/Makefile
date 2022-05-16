@@ -10,8 +10,9 @@ simulation2.out: simulation_complex.c
 
 deleteofiles:
 	rm -f *.o
+	rm -f *.txt
 	
 deleteexec:
-	rm -f simulation.out
+	rm -f simulation.out simulation2.out
 
 deleteall: deleteexec deleteofiles

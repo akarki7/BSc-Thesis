@@ -84,11 +84,11 @@ int main (int argc, char *argv[])
 		
 	if (remove("robot.txt") != 0)
 	{
-		printf("Unable to delete the file robot.txt");
+		printf("Unable to delete the file robot.txt\n");
 	}
 	if (remove("battery.txt") != 0)
 	{
-		printf("Unable to delete the file battery.txt");
+		printf("Unable to delete the file battery.txt\n");
 	}
 
 	create_simulation_environment();
@@ -188,7 +188,7 @@ void ExecuteBSchedule() {
 		for(i=0; i<=MAXPV; i++){
 			for(j=0; j<ProcPerPC[i]; j++){
 				if(wait[i][j]==0) {
-					printf ("p%d.%d ", i, j);
+					// printf ("p%d.%d ", i, j);
 					execute_function(i,j);
 					printf("Speed = %d, X=%f, Y= %f, Battery=%f\n",SPEED,X,Y,current_battery);
 					fprintf(filePointer,"%d %f %f\n",SPEED,X,Y);	

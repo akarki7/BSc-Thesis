@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
                 p_flag=1;
                 break;
             default:
-                fprintf(stderr, "usage: [-f] [-o filename] [-t] [-p]\n");
+                fprintf(stderr, "usage: [-f] [-o filename] [-a] [-p]\n");
                 exit(EXIT_FAILURE);
         }
     }
@@ -103,7 +103,6 @@ int main (int argc, char *argv[])
         while(k<length){
             MAXPV=MAXPV_array[k];
             MAXProcPerPC=MAXProcPerPC_array[k];
-            printf("k = %d %d %d\n",k,MAXPV,MAXProcPerPC);
             int **wait = (int**)malloc((MAXPV+1) * sizeof(int*));
             for (i = 0; i <= MAXPV; i++){
                 wait[i] = (int*)malloc(MAXProcPerPC * sizeof(int));
@@ -112,11 +111,6 @@ int main (int argc, char *argv[])
             int *ProcPerPC = (int*)malloc((MAXPV+1) * sizeof(int*));
 
             ProcPerPC=ProcPerPC_array[k];
-
-            for (i=0;i<=MAXPV;i++){
-                printf("%d ",ProcPerPC[i]);
-            }   
-            printf("\n");
 
             ComputeWait(wait,ProcPerPC,MAXPV);
             ExecuteBSchedule_plot_only(ProcPerPC,wait,filename,MAXPV, f_flag,t_flag);
@@ -204,9 +198,6 @@ void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, 
 	int i,j;
     int count=0;
 
-    FILE *filePointer;
-    filePointer = fopen(filename, "w") ; 
-
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
 
@@ -237,6 +228,8 @@ void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, 
     printf("Dirty = %d\n",dirty);
     
     if (f_flag){
+        FILE *filePointer;
+        filePointer = fopen(filename, "w") ; 
         fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
         fprintf(filePointer, "Workload (WL) = %d\n",count);
         fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
