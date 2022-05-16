@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
 	
 	if (remove("robot.txt") != 0)
 	{
-		printf("Unable to delete the file");
+		printf("Unable to delete the file robot.txt\n");
 	}
 
 	create_simulation_environment();
