@@ -49,13 +49,20 @@
     code
     ├── plots (used to create plots from the results obtained)
         ├── data (contains the data used for plotting)
+            ├── complex_simulation_battery.csv
+            ├── data_maxpv_4.csv
+            ├── data_maxpv_7.csv
+            ├── data_maxpv_10.csv
+            ├── simulation_complex_full.csv
+            ├── simulation_complex_plot.csv
+            ├── simulation_simple.csv
         ├── plotter.py (python file used to create plots using matplotlib)
     ├── simulation
         ├── simulation.c (simple simulation)
         ├── simulation_complex.c (complex simulation)
     ├── b_scheduling.c (core b-scheduling algorithm)
     ├── main.c (running b-scheduling algorithm at a certain frequency)
-    ├── output_only.c (get results of B-scheduling and the analysis of output for dynamic scenarios as inputted)
+    ├── output_only.c (get results of a single major cycle of B-scheduling and the analysis of output for dynamic scenarios as inputted)
 
     outputs (stores important output obtained from the execution)
 
