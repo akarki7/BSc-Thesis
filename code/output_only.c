@@ -198,9 +198,6 @@ void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, 
 	int i,j;
     int count=0;
 
-    FILE *filePointer;
-    filePointer = fopen(filename, "w") ; 
-
 	// compute the number of minor cycles
 	nmic = (1<<MAXPV);
 
@@ -231,6 +228,8 @@ void ExecuteBSchedule_analysis_only(int *ProcPerPC, int **wait, char *filename, 
     printf("Dirty = %d\n",dirty);
     
     if (f_flag){
+        FILE *filePointer;
+        filePointer = fopen(filename, "w") ; 
         fputs("\n\n----------------------------------\nAnalysis of the schedule:\n\n",filePointer);
         fprintf(filePointer, "Workload (WL) = %d\n",count);
         fprintf(filePointer,"Average processes per minor cycle (av) = %lf\n",av);
