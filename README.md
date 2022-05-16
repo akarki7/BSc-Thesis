@@ -36,7 +36,7 @@
 ---------------------------------------------
 * From the directory /code/simulation run `make`
 * For simple simulation run `./simulation.out`
-* For complex simulation run `./simulation.out` 
+* For complex simulation run `./simulation2.out` 
 
 ## Steps to create plots
 ---------------------------------------------
